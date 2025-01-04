@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="card_avatar_layout_width">72dp</dimen>
+    <dimen name="card_avatar_layout_height">72dp</dimen>
+    <dimen name="card_avatar_radius">72dp</dimen>
+    <dimen name="medium_space">16dp</dimen>
+    <dimen name="small_space">8dp</dimen>
+    <dimen name="large_space">32dp</dimen>
+    <dimen name="text_medium">18sp</dimen>
+    <dimen name="account_avartar_width">60dp</dimen>
+    <dimen name="account_avartar_height">60dp</dimen>
+    <dimen name="smalll_avartar_width">24dp</dimen>
+    <dimen name="small_avartar_height">24dp</dimen>
+    <dimen name="logo_width">64dp</dimen>
+    <dimen name="logo_height">64dp</dimen>
+    <dimen name="card_corner_radius">8dp</dimen>
+</resources>

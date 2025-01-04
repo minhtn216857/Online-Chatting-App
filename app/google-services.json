@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "970783942453",
+    "project_id": "messengerminh",
+    "storage_bucket": "messengerminh.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:970783942453:android:0801946226df20b246ce7c",
+        "android_client_info": {
+          "package_name": "com.example.minh_messenger_test"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDbLy3dN_rWvfTPHv_MhXe4EGxku4UERcQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_phonebook"
+    android:label="@string/title_phonebook"
+    app:startDestination="@id/phoneBookFragment">
+
+    <fragment
+        android:id="@+id/phoneBookFragment"
+        android:name="com.example.minh_messenger_test.ui.phonebook.PhoneBookFragment"
+        android:label="@string/title_phonebook"
+        tools:layout="@layout/fragment_phone_book" />
+</navigation>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_chat"
+    app:startDestination="@id/home_fragment">
+
+    <fragment
+        android:id="@+id/home_fragment"
+        android:name="com.example.minh_messenger_test.ui.home.HomeFragment"
+        android:label="@string/title_chat"
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_home_fragment_to_chat_fragment"
+            app:destination="@id/chat_fragment" />
+        <action
+            android:id="@+id/action_home_fragment_to_login_fragment"
+            app:destination="@id/login_fragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/login_fragment"
+        android:name="com.example.minh_messenger_test.ui.login.LoginFragment"
+        android:label="@string/title_login"
+        tools:layout="@layout/fragment_login" >
+        <action
+            android:id="@+id/action_login_fragment_to_register_fragment"
+            app:destination="@id/register_fragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/register_fragment"
+        android:name="com.example.minh_messenger_test.ui.register.RegisterFragment"
+        android:label="@string/title_register"
+        tools:layout="@layout/fragment_register" />
+    <fragment
+        android:id="@+id/chat_fragment"
+        android:name="com.example.minh_messenger_test.ui.chat.ChatFragment"
+        android:label="fragment_chat"
+        tools:layout="@layout/fragment_chat" >
+        <action
+            android:id="@+id/action_chat_fragment_to_voice_call_activity"
+            app:destination="@id/voice_call_activity" />
+    </fragment>
+    <activity
+        android:id="@+id/voice_call_activity"
+        android:name="com.example.minh_messenger_test.ui.voicecall.VoiceCallActivity"
+        android:label="@string/title_call"
+        tools:layout="@layout/activity_voice_call" />
+    <action
+        android:id="@+id/action_global_home_fragment"
+        app:destination="@id/home_fragment"
+        app:popUpTo="@id/home_fragment" />
+</navigation>

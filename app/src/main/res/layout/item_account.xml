@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/image_item_avartar"
+        android:layout_width="@dimen/account_avartar_width"
+        android:layout_height="@dimen/account_avartar_height"
+        android:layout_marginStart="@dimen/medium_space"
+        android:layout_marginTop="@dimen/small_space"
+        android:layout_marginBottom="@dimen/small_space"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
+        app:srcCompat="@drawable/avartar_ace_fas" />
+
+    <TextView
+        android:id="@+id/text_item_last_message"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="Xin chao ban"
+        app:layout_constraintEnd_toEndOf="@+id/text_item_display_name"
+        android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+        app:layout_constraintHorizontal_bias="0.492"
+        app:layout_constraintStart_toStartOf="@+id/text_item_display_name"
+        app:layout_constraintTop_toBottomOf="@+id/text_item_display_name" />
+
+    <TextView
+        android:id="@+id/text_item_display_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/medium_space"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="@dimen/medium_space"
+        android:text="Minh Trần"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        app:layout_constraintEnd_toStartOf="@+id/image_item_read_status"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/image_item_avartar"
+        app:layout_constraintTop_toTopOf="@+id/image_item_avartar" />
+
+    <ImageView
+        android:id="@+id/image_item_read_status"
+        android:layout_width="@dimen/smalll_avartar_width"
+        android:layout_height="@dimen/small_avartar_height"
+        android:layout_marginEnd="@dimen/medium_space"
+        app:layout_constraintBottom_toBottomOf="@+id/image_item_avartar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/image_item_avartar"
+        app:srcCompat="@drawable/avartar_luffy_fas" />
+</androidx.constraintlayout.widget.ConstraintLayout>

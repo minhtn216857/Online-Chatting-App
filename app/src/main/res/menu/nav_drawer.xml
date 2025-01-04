@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/item_profile"
+        android:icon="@drawable/baseline_person_24"
+        android:title="@string/title_profile"
+        app:showAsAction="ifRoom|withText" />
+    <item
+        android:id="@+id/item_dark_mode"
+        android:icon="@drawable/ic_dark_mode"
+        android:title="@string/title_dark_mode"
+        app:showAsAction="ifRoom|withText" />
+    <item
+        android:id="@+id/item_waiting_message"
+        android:icon="@drawable/ic_message"
+        android:title="@string/title_waiting_message"
+        app:showAsAction="ifRoom|withText" />
+    <item
+        android:id="@+id/item_repository"
+        android:icon="@drawable/ic_repository"
+        android:title="@string/title_repository"
+        app:showAsAction="ifRoom|withText" />
+    <item
+        android:id="@+id/item_login"
+        android:icon="@drawable/ic_login"
+        android:title="@string/title_login"
+        app:showAsAction="ifRoom|withText" />
+    <group android:id="@+id/group1">
+        <item
+            android:id="@+id/item_settings"
+            android:icon="@drawable/ic_settings"
+            android:title="@string/title_setting"
+            app:showAsAction="ifRoom|withText" />
+        <item
+            android:id="@+id/item_about"
+            android:icon="@drawable/ic_about"
+            android:title="@string/title_about"
+            app:showAsAction="ifRoom|withText" />
+    </group>
+</menu>

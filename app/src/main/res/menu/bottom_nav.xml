@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_chat"
+        android:icon="@drawable/ic_chat"
+        android:title="@string/title_chat"
+        app:showAsAction="ifRoom|withText" />
+    <item
+        android:id="@+id/nav_call"
+        android:icon="@drawable/ic_call"
+        android:title="Call"
+        app:showAsAction="ifRoom|withText" />
+    <item
+        android:id="@+id/nav_phonebook"
+        android:icon="@drawable/ic_phonebook"
+        android:title="Phone Book"
+        app:showAsAction="ifRoom|withText" />
+</menu>
