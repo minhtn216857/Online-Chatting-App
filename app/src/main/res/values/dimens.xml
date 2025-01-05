@@ -16,4 +16,10 @@
     <dimen name="logo_width">64dp</dimen>
     <dimen name="logo_height">64dp</dimen>
     <dimen name="card_corner_radius">8dp</dimen>
+    
+    <dimen name="photo_size">128dp</dimen>
+    <dimen name="message_padding_vertical">16dp</dimen>
+    <dimen name="message_padding_horizontal_long">24dp</dimen>
+    <dimen name="message_padding_horizontal_short">16dp</dimen>
+
 </resources>

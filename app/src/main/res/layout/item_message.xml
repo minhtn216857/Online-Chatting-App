@@ -10,6 +10,7 @@
         android:id="@+id/text_message"
         android:layout_width="wrap_content"
         android:textSize="@dimen/text_medium"
+        android:textColor="@color/white"
         android:layout_marginStart="@dimen/Large_space"
         android:layout_marginTop="@dimen/small_space"
         android:layout_marginBottom="@dimen/small_space"
