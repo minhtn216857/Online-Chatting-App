@@ -11,6 +11,8 @@ import com.example.minh_messenger_test.R
 import com.example.minh_messenger_test.data.source.Repository
 import com.example.minh_messenger_test.utils.MessengerUtils
 import com.example.minh_messenger_test.data.model.Account
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -26,6 +28,7 @@ class LoginViewModel(
     val loginState: LiveData<LoginState> = _loginState
 
     fun login(username: String, password: String) {
+
         viewModelScope.launch(Dispatchers.IO) {
             val account = Account(
                 username,
@@ -101,7 +104,6 @@ class LoginViewModel(
             _currentAccount.postValue(account)
         }
     }
-
 }
 
 // Nếu  ViewModel co tham so thi khoi tao phai dung Factory
@@ -119,3 +121,4 @@ class LoginViewModelFactory(
         throw IllegalArgumentException("Argument must be class RegisterViewModel")
     }
 }
+

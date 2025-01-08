@@ -31,6 +31,8 @@ import com.example.minh_messenger_test.ui.login.LoginViewModel
 import com.example.minh_messenger_test.ui.login.LoginViewModelFactory
 import com.example.minh_messenger_test.utils.MessengerUtils
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -77,6 +79,16 @@ class MainActivity : AppCompatActivity() {
         retrieveToken()
         setupViewModel()
         setupDrawerLayoutMenuItemSelectedListener()
+
+//        // Lấy FCM Registration Token khi ứng dụng khởi chạy
+//        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+//            if (task.isSuccessful) {
+//                MessengerUtils.token = task.result // Lưu token vào biến toàn cục
+//                Log.d("FCM", "Token initialized: ${MessengerUtils.token}")
+//            } else {
+//                Log.e("FCM", "Failed to fetch token", task.exception)
+//            }
+//        }
 
     }
 
@@ -150,20 +162,31 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
+//
+//    private fun retrieveToken() {
+//        CoroutineScope(Dispatchers.IO).launch {
+//            val token: String? = AccessToken().accessToken
+//            Handler(Looper.getMainLooper()).post {
+//                if (token != null) {
+//                    MessengerUtils.token = token
+//                    Log.e("Access Token: ", token)
+//                } else {
+//                    Log.e("Access Token: ", "Failed to  obtain access token")
+//                }
+//            }
+//        }
+//    }
     private fun retrieveToken() {
-        CoroutineScope(Dispatchers.IO).launch {
-            val token: String? = AccessToken().accessToken
-            Handler(Looper.getMainLooper()).post {
-                if (token != null) {
-                    MessengerUtils.token = token
-                    Log.e("Access Token: ", token)
-                } else {
-                    Log.e("Access Token: ", "Failed to  obtain access token")
-                }
+            FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                MessengerUtils.token = task.result // Lưu token vào biến toàn cục
+                Log.d("FCM", "Token initialized: ${MessengerUtils.token}")
+            } else {
+                Log.e("FCM", "Failed to fetch token", task.exception)
             }
         }
     }
+
 
     private fun setupViewModel() {
         val repository = (application as MessengerApplication).repository

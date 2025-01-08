@@ -3,19 +3,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     app:layoutDescription="@xml/item_message_scene">
 
     <TextView
         android:id="@+id/text_message"
         android:layout_width="wrap_content"
-        android:textSize="@dimen/text_medium"
-        android:textColor="@color/white"
+        android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/Large_space"
         android:layout_marginTop="@dimen/small_space"
         android:layout_marginBottom="@dimen/small_space"
-        android:layout_height="wrap_content"
-        android:text="Hi Hien Le" />
+        android:text="Hi Hien Le"
+        android:textColor="@color/white"
+        android:textSize="@dimen/text_medium" />
 
     <ImageView
         android:id="@+id/image_message_item"
@@ -27,7 +27,6 @@
         android:contentDescription="@string/desc_item_message"
 
         />
-
 
 
 </FrameLayout>

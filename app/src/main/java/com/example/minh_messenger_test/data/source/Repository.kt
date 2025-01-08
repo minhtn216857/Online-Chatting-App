@@ -1,4 +1,5 @@
 package com.example.minh_messenger_test.data.source
+import com.example.minh_messenger_test.data.model.Mesagge
 
 import com.example.minh_messenger_test.data.model.Account
 
@@ -15,6 +16,10 @@ interface Repository {
         suspend fun updateAccount(account: Account): Boolean
 
         suspend fun loadFriendAccounts(username: String): List<Account>?
+
+        suspend fun sendMessage(message: Mesagge): Boolean
+
+        suspend fun getChat(sender: String, receiver: String): List<Mesagge>
     }
 
     interface LocalRepository : Repository {

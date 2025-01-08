@@ -1,10 +1,11 @@
 package com.example.minh_messenger_test.data.source.remote
 
-import android.os.Message
 import com.example.minh_messenger_test.data.model.Account
+import com.example.minh_messenger_test.data.model.Mesagge
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Headers
 import retrofit2.http.POST
 import retrofit2.http.Query
 
@@ -24,9 +25,22 @@ interface MessageService {
     suspend fun login(@Body account: Account): Response<Account>
 
     // Phương thức sendMessage để gửi tin nhắn, sử dụng phương thức HTTP POST
+    @Headers(
+        "Content-Type: application/json",
+        "Authorization: key = 20a4fd23903edc861607d3fd0e4b6777414c833f"
+    )
     @POST("/")
-    suspend fun sendMessage(@Body message: Message): Response<ResponseResult>
+    suspend fun sendMessage(@Body message: Mesagge): Response<ResponseResult>
 
     @GET("/")
     suspend fun getFriendAccounts(@Query("username") username: String): Response<List<Account>>
+
+    @GET("/")
+    suspend fun getChat(
+        @Query("sender") sender: String,
+        @Query("receiver") receiver: String
+    ): Response<List<Mesagge>>
+
+    @GET("/")
+    suspend fun getLastMessages(@Query("username") username: String): Response<List<Mesagge>>
 }

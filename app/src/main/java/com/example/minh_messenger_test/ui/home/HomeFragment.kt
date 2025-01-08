@@ -14,6 +14,8 @@ import com.example.minh_messenger_test.MessengerApplication
 import com.example.minh_messenger_test.R
 import com.example.minh_messenger_test.data.model.Account
 import com.example.minh_messenger_test.databinding.FragmentHomeBinding
+import com.example.minh_messenger_test.ui.chat.ChatViewModel
+import com.example.minh_messenger_test.ui.chat.ChatViewModelFactory
 import com.example.minh_messenger_test.ui.login.LoginFragment
 import com.example.minh_messenger_test.ui.login.LoginViewModel
 import com.example.minh_messenger_test.ui.login.LoginViewModelFactory
@@ -27,6 +29,7 @@ class HomeFragment : Fragment() {
     private lateinit var loginViewModel: LoginViewModel
     private lateinit var homeViewModel: HomeViewModel
     private lateinit var accountAdapter: AccountAdapter
+    private lateinit var chatViewModel: ChatViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,6 +66,11 @@ class HomeFragment : Fragment() {
             HomeViewModelFactory(repository)
         )[HomeViewModel::class.java]
 
+        chatViewModel = ViewModelProvider(
+            requireActivity(),
+            ChatViewModelFactory(repository)
+        )[ChatViewModel::class.java]
+
         loginViewModel = ViewModelProvider(
             requireActivity(),
             LoginViewModelFactory(repository)
@@ -88,6 +96,7 @@ class HomeFragment : Fragment() {
             override fun OnItemClick(account: Account) {
                 val loggedInAccount = loginViewModel.loggedInAccount.value
                 if (loggedInAccount?.username != null) {
+                    chatViewModel.updateInteractingAccount(account)
                     val action = HomeFragmentDirections.actionHomeFragmentToChatFragment()
                     navController.navigate(action)
                 }else{

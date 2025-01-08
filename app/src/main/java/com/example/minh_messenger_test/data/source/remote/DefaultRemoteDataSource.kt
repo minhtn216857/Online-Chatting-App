@@ -1,7 +1,9 @@
 package com.example.minh_messenger_test.data.source.remote
 
 import com.example.minh_messenger_test.data.model.Account
+import com.example.minh_messenger_test.data.model.Mesagge
 import com.example.minh_messenger_test.data.source.DataSource
+import com.google.gson.GsonBuilder
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -45,6 +47,16 @@ class DefaultRemoteDataSource : DataSource.RemoteDataSource {
         return result.isSuccessful
     }
 
+    override suspend fun getChat(sender: String, receiver: String): List<Mesagge> {
+        val baseUrl = "https://getchat-pxgdcdndsa-uc.a.run.app"
+        val retrofit = createRetrofitService(baseUrl).create(MessageService::class.java)
+        val result = retrofit.getChat(sender, receiver)
+        if(result.isSuccessful){
+            return result.body() ?: emptyList()
+        }
+        return emptyList()
+    }
+
     // Hàm login để đăng nhập, trả về đối tượng Account nếu thành công, ngược lại trả về null
     override suspend fun login(account: Account): Account? {
         // URL cơ sở cho dịch vụ đăng nhập
@@ -72,9 +84,26 @@ class DefaultRemoteDataSource : DataSource.RemoteDataSource {
 
     // Hàm tạo retrofit service từ URL cơ sở
     private fun createRetrofitService(baseUrl: String): Retrofit {
+        val gson = GsonBuilder().serializeNulls().create()
         return Retrofit.Builder()
             .baseUrl(baseUrl)  // Đặt URL cơ sở cho retrofit
-            .addConverterFactory(GsonConverterFactory.create())  // Thêm converter factory cho Gson
+            .addConverterFactory(GsonConverterFactory.create(gson))  // Thêm converter factory cho Gson
             .build()  // Xây dựng đối tượng Retrofit
     }
+
+    override suspend fun sendMessage(message: Mesagge): Boolean {
+        // URL cơ sở cho dịch vụ đăng nhập
+        val baseUrl = "https://sendmessage-pxgdcdndsa-uc.a.run.app"
+        // Tạo retrofit service từ URL cơ sở
+        val retrofit = createRetrofitService(baseUrl).create(MessageService::class.java)
+        // Gọi phương thức login từ MessageService
+        val result = retrofit.sendMessage(message)
+        // Trả về đối tượng Account nếu yêu cầu thành công, ngược lại trả về null
+        if (result.isSuccessful){
+            return result.body()?.success ?: false
+        }
+        return false
+    }
+
+
 }
