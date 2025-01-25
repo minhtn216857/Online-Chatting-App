@@ -6,9 +6,10 @@ import com.example.minh_messenger_test.data.source.DataSource
 import com.google.gson.GsonBuilder
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import javax.inject.Inject
 
 // Lớp DefaultRemoteDataSource kế thừa từ DataSource.RemoteDataSource
-class DefaultRemoteDataSource : DataSource.RemoteDataSource {
+class DefaultRemoteDataSource @Inject constructor(): DataSource.RemoteDataSource {
 
     // Hàm createAccount để tạo tài khoản mới, trả về một chuỗi kết quả
     override suspend fun createAccount(account: Account): String {

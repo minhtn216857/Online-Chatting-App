@@ -1,0 +1,48 @@
+package com.example.minh_messenger_test.di
+
+import android.content.Context
+import androidx.room.Room
+import com.example.minh_messenger_test.data.source.local.AccountDao
+import com.example.minh_messenger_test.data.source.local.MessengerDatabase
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable
+import com.google.firebase.Firebase
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.gson.Gson
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
+
+
+@Module
+@InstallIn(SingletonComponent::class)
+object MessengerDatabaseModule {
+
+    @Provides
+    @Singleton
+    fun provideMessengerDatabase(@ApplicationContext context: Context): MessengerDatabase{
+        return Room.databaseBuilder(
+            context.applicationContext,
+            MessengerDatabase::class.java,
+            "messenger_db"
+        ).fallbackToDestructiveMigrationFrom()
+            .build()
+    }
+
+    @Provides
+    fun provideAccountDao(database: MessengerDatabase): AccountDao{
+        return database.getAccountDao()
+    }
+
+    @Provides
+    fun provideDatabaseInstance(): FirebaseDatabase = FirebaseDatabase.getInstance()
+
+    @Provides
+    fun provideDatabaseReference(db: FirebaseDatabase):DatabaseReference = db.reference
+
+    @Provides
+    fun provideGson(): Gson = Gson()
+}

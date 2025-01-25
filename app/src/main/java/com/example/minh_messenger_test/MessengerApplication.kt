@@ -9,18 +9,21 @@ import com.example.minh_messenger_test.data.source.Repository
 import com.example.minh_messenger_test.data.source.local.DefaultLocalDataSource
 import com.example.minh_messenger_test.data.source.local.MessengerDatabase
 import com.example.minh_messenger_test.data.source.remote.DefaultRemoteDataSource
+import dagger.hilt.android.HiltAndroidApp
+import javax.inject.Inject
 
+@HiltAndroidApp
 class MessengerApplication: Application() {
 
     private lateinit var localDataSource: DataSource.LocalDataSource
     private lateinit var remoteDataSource: DataSource.RemoteDataSource
-    lateinit var repository: Repository
+    @Inject lateinit var repository: Repository
     lateinit var sharedReference: SharedPreferences
 
     override fun onCreate() {
         super.onCreate()
         setupSharedPref()
-        setupViewModel()
+//        setupViewModel()
     }
 
     private fun setupSharedPref() {
@@ -30,10 +33,9 @@ class MessengerApplication: Application() {
         )
     }
 
-    private fun setupViewModel() {
-        val database = MessengerDatabase.getDatabase(applicationContext)
-        localDataSource = DefaultLocalDataSource(database)
-        remoteDataSource = DefaultRemoteDataSource()
-        repository = DefaultRepository(localDataSource, remoteDataSource)
-    }
+//    private fun setupViewModel() {
+//        localDataSource = DefaultLocalDataSource(database)
+//        remoteDataSource = DefaultRemoteDataSource()
+//        repository = DefaultRepository(localDataSource, remoteDataSource)
+//    }
 }

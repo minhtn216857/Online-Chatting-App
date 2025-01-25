@@ -25,23 +25,32 @@ import com.example.minh_messenger_test.FCM.AccessToken
 import com.example.minh_messenger_test.MessengerApplication
 import com.example.minh_messenger_test.R
 import com.example.minh_messenger_test.data.model.Account
+import com.example.minh_messenger_test.data.model.AccountStatus
 import com.example.minh_messenger_test.databinding.ActivityMainBinding
 import com.example.minh_messenger_test.ui.login.LoginState
 import com.example.minh_messenger_test.ui.login.LoginViewModel
 import com.example.minh_messenger_test.ui.login.LoginViewModelFactory
 import com.example.minh_messenger_test.utils.MessengerUtils
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.Firebase
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.database
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessaging
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var loginViewModel: LoginViewModel
+    @Inject lateinit var databaseRef: DatabaseReference
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -162,20 +171,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-//
-//    private fun retrieveToken() {
-//        CoroutineScope(Dispatchers.IO).launch {
-//            val token: String? = AccessToken().accessToken
-//            Handler(Looper.getMainLooper()).post {
-//                if (token != null) {
-//                    MessengerUtils.token = token
-//                    Log.e("Access Token: ", token)
-//                } else {
-//                    Log.e("Access Token: ", "Failed to  obtain access token")
-//                }
-//            }
-//        }
-//    }
+
     private fun retrieveToken() {
             FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
             if (task.isSuccessful) {
@@ -231,8 +227,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun logout(){
         val sharedPreferences = (application as MessengerApplication).sharedReference
+        val username = loginViewModel.loggedInAccount.value!!.username
+        updateStatusLogoutRealtimeDatabase(username)
         loginViewModel.saveLoginState(sharedPreferences, false)
         loginViewModel.updateLoginState(null)
+    }
+
+    private fun updateStatusLogoutRealtimeDatabase(username: String){
+        val databaseRef = Firebase.database.reference
+        databaseRef.child(username).child("status").setValue(AccountStatus.OFFLINE)
     }
 
 }

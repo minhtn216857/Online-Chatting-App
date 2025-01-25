@@ -2,8 +2,9 @@ package com.example.minh_messenger_test.data.source.local
 
 import com.example.minh_messenger_test.data.model.Account
 import com.example.minh_messenger_test.data.source.DataSource
+import javax.inject.Inject
 
-class DefaultLocalDataSource(
+class DefaultLocalDataSource @Inject constructor(
     database: MessengerDatabase
 ): DataSource.LocalDataSource {
     private val accountDao = database.getAccountDao()

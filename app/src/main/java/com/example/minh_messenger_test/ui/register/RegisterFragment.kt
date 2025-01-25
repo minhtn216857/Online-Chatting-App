@@ -18,7 +18,9 @@ import com.example.minh_messenger_test.utils.MessengerUtils
 import com.example.minh_messenger_test.utils.MessengerUtils.afterTextChanged
 import com.example.minh_messenger_test.utils.MessengerUtils.defaultAvatarId
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class RegisterFragment : Fragment(), View.OnClickListener {
 
     private lateinit var binding: FragmentRegisterBinding

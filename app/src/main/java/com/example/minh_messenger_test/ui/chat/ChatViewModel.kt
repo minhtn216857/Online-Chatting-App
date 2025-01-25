@@ -14,10 +14,13 @@ import com.example.minh_messenger_test.data.model.Notification
 import com.example.minh_messenger_test.data.source.Repository
 import com.example.minh_messenger_test.ui.home.HomeViewModel
 import com.example.minh_messenger_test.ui.login.LoginViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ChatViewModel(
+@HiltViewModel
+class ChatViewModel @Inject constructor(
     val repository: Repository
 ):ViewModel() {
 

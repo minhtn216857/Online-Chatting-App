@@ -4,6 +4,9 @@ plugins {
     id("com.google.gms.google-services")
     id("com.google.devtools.ksp")
     id("androidx.navigation.safeargs.kotlin")
+    id("com.google.dagger.hilt.android")
+    kotlin("kapt")
+
 }
 
 android {
@@ -76,12 +79,17 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.legacy.support.v4)
     implementation(libs.firebase.firestore.ktx)
+    implementation(libs.firebase.database.ktx)
     annotationProcessor(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
 
     // glide
     implementation(libs.glide)
+
+    //hilt
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

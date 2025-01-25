@@ -2,8 +2,9 @@ package com.example.minh_messenger_test.data.source
 
 import com.example.minh_messenger_test.data.model.Account
 import com.example.minh_messenger_test.data.model.Mesagge
+import javax.inject.Inject
 
-class DefaultRepository(
+class DefaultRepository @Inject constructor(
     private val localDataSource: DataSource.LocalDataSource,
     private val remoteDataSource: DataSource.RemoteDataSource
 ): Repository.RemoteRepository, Repository.LocalRepository {

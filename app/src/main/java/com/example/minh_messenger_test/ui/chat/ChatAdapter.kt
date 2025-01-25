@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.view.Gravity
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.TextView
@@ -109,12 +110,10 @@ class ChatAdapter(
                 layoutParams = layoutParam.apply {
                     gravity = Gravity.END
                 }
-
-                Glide.with(holder.binding.imageMessageItem)
-                    .load(imageUrl)
-                    .circleCrop()
-                    .into(holder.binding.imageMessageItem)
+                holder.binding.imageMessageItem.visibility = View.GONE
             }
+//
+
         }
 
         if(message.data.photoUrl != null){

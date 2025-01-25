@@ -23,7 +23,9 @@ import com.example.minh_messenger_test.ui.register.RegisterViewModel
 import com.example.minh_messenger_test.ui.register.RegisterViewModelFactory
 import com.example.minh_messenger_test.utils.MessengerUtils.afterTextChanged
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class LoginFragment : Fragment() {
     private lateinit var binding: FragmentLoginBinding
     private lateinit var viewModel: LoginViewModel

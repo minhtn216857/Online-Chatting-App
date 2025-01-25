@@ -8,16 +8,23 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.minh_messenger_test.R
 import com.example.minh_messenger_test.data.model.Account
+import com.example.minh_messenger_test.data.model.AccountStatus
 import com.example.minh_messenger_test.data.source.Repository
 import com.example.minh_messenger_test.utils.MessengerUtils
+import com.google.firebase.Firebase
+import com.google.firebase.database.database
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class RegisterViewModel(
+@HiltViewModel
+class RegisterViewModel @Inject constructor(
     private val repository: Repository
 ) : ViewModel() {
     private val _registerFormState = MutableLiveData<RegisterFormState>()
     private val _registerState = MutableLiveData<String>()
+    private val databaseRef = Firebase.database.reference
 
     val registerFormState: LiveData<RegisterFormState> = _registerFormState
     val registerState: LiveData<String> = _registerState
@@ -37,8 +44,22 @@ class RegisterViewModel(
                 displayName, null, token, imageUrl
             )
             val result = (repository as Repository.RemoteRepository).createAccount(account)
-            _registerState.postValue(result)
+            createRealTimeDatabaseNode(account, result)
         }
+    }
+
+    private fun createRealTimeDatabaseNode(account: Account, result: String){
+        val userNode = mapOf(
+            "password" to account.password,
+            "status" to AccountStatus.OFFLINE.name,
+        )
+        databaseRef.child(account.username).setValue(userNode)
+            .addOnSuccessListener {
+                _registerState.postValue(result)
+            }
+            .addOnFailureListener {
+                _registerState.postValue("Failure: ${it.message}")
+            }
     }
 
     fun registerFormChanged(

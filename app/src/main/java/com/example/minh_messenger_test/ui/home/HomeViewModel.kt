@@ -8,10 +8,13 @@ import androidx.lifecycle.viewModelScope
 import com.example.minh_messenger_test.data.model.Account
 import com.example.minh_messenger_test.data.source.Repository
 import com.example.minh_messenger_test.ui.login.LoginViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class HomeViewModel(
+@HiltViewModel
+class HomeViewModel @Inject constructor(
     private val repository: Repository
 ): ViewModel() {
     private val _friendAccounts = MutableLiveData<List<Account>>()

@@ -11,12 +11,17 @@ import com.example.minh_messenger_test.R
 import com.example.minh_messenger_test.data.source.Repository
 import com.example.minh_messenger_test.utils.MessengerUtils
 import com.example.minh_messenger_test.data.model.Account
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.messaging.FirebaseMessaging
+import com.example.minh_messenger_test.data.model.AccountStatus
+import com.google.firebase.Firebase
+import com.google.firebase.database.database
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class LoginViewModel(
+
+@HiltViewModel
+class LoginViewModel @Inject constructor(
     private val repository: Repository
 ) : ViewModel() {
     private val _loginFormState = MutableLiveData<LoginFormState>()
@@ -39,8 +44,20 @@ class LoginViewModel(
             result?.let{
                 _loginState.postValue(LoginState(it.username, true))
             }
+            updateStatusLoginRealTimeDatabase(username)
             _loggedInAccount.postValue(result)
         }
+    }
+
+    private fun updateStatusLoginRealTimeDatabase(username: String){
+        val databaseRef = Firebase.database.reference
+        databaseRef.child(username).child("status").setValue(AccountStatus.ONLINE.name)
+            .addOnSuccessListener {
+                Log.d("RealtimeDB", "Success")
+            }
+            .addOnFailureListener{
+                Log.d("RealtimeDB", "Failure")
+            }
     }
 
     fun saveAccountToLocal(){
