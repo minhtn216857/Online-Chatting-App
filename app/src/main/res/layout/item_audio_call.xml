@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/large_space"
+    app:cardCornerRadius="10dp"
+    android:elevation="4dp"
+    android:foreground="?attr/selectableItemBackground"
+    app:cardBackgroundColor="@color/deep_purple_50"
+
+    >
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageButton
+            android:id="@+id/btn_call_video"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:src="@drawable/video_chat_24"
+            app:layout_constraintBottom_toBottomOf="@+id/img_avatar"
+            app:layout_constraintEnd_toStartOf="@+id/text_status"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/btn_call_audio"
+            app:layout_constraintTop_toTopOf="@+id/img_avatar"
+            app:layout_constraintVertical_bias="0.47"
+            tools:ignore="ContentDescription,SpeakableTextPresentCheck,TouchTargetSizeCheck,ImageContrastCheck" />
+
+        <ImageView
+            android:id="@+id/img_avatar"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="@dimen/medium_space"
+            android:layout_marginTop="@dimen/small_space"
+            android:layout_marginBottom="@dimen/small_space"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0"
+            app:srcCompat="@drawable/avartar_ace_fas"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/text_username_call"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="Minh Trần"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/img_avatar"
+            app:layout_constraintEnd_toStartOf="@+id/btn_call_audio"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/img_avatar"
+            app:layout_constraintTop_toTopOf="@+id/img_avatar"
+            app:layout_constraintVertical_bias="0.512"
+            tools:ignore="HardcodedText" />
+
+        <ImageButton
+            android:id="@+id/btn_call_audio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            app:layout_constraintBottom_toBottomOf="@+id/img_avatar"
+            app:layout_constraintTop_toTopOf="@+id/img_avatar"
+            app:layout_constraintVertical_bias="0.47"
+            app:srcCompat="@drawable/ic_call_24"
+            tools:ignore="ContentDescription,MissingConstraints,SpeakableTextPresentCheck,TouchTargetSizeCheck,ImageContrastCheck"
+            tools:layout_editor_absoluteX="221dp" />
+
+        <TextView
+            android:id="@+id/text_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:text="@string/Status_act"
+            android:textColor="#7CB342"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="@+id/img_avatar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/img_avatar"
+            app:layout_constraintVertical_bias="0.512" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>
+
