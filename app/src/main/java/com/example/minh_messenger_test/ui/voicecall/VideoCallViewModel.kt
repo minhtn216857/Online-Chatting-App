@@ -1,6 +1,7 @@
 package com.example.minh_messenger_test.ui.voicecall
 
 import android.provider.MediaStore.Video
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -22,28 +23,36 @@ class VideoCallViewModel @Inject constructor(
     private val databaseReference: DatabaseReference
 ): ViewModel() {
     private val _friendAccWithStatus = MutableLiveData<List<Pair<Account, String>>>()
-    val friendAccWithStatus: LiveData<List<Pair<Account, String>>> = _friendAccWithStatus
+    val friendsAccWithStatus: LiveData<List<Pair<Account, String>>> = _friendAccWithStatus
 
-    fun loadFriendWithStatus(username: String){
-        viewModelScope.launch(Dispatchers.IO){
+    fun loadFriendWithStatus(username: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            Log.d("VideoCallViewModel", "loadFriendWithStatus() called with username: $username")
+
             val friends = (repository as Repository.RemoteRepository).loadFriendAccounts(username)
-            databaseReference.addListenerForSingleValueEvent(object :ValueEventListener{
+            Log.d("VideoCallViewModel", "Friends loaded from repository: $friends")
+
+            databaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
+                    Log.d("VideoCallViewModel", "Firebase snapshot received: ${snapshot.childrenCount}")
+
                     val friendStatusList = friends?.map { friend ->
                         val status = snapshot.child(friend.username).child("status").value.toString()
+                        Log.d("VideoCallViewModel", "Friend: ${friend.username}, Status: $status")
                         friend to status
                     }
+
                     _friendAccWithStatus.postValue(friendStatusList!!)
+                    Log.d("VideoCallViewModel", "LiveData updated with: $friendStatusList")
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    TODO("Not yet implemented")
+                    Log.e("VideoCallViewModel", "Firebase error: ${error.message}")
                 }
-
             })
-
         }
     }
+
 }
 
 @Suppress("UNCHECKED_CAST")

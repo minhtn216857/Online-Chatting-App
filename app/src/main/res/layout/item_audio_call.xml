@@ -8,6 +8,7 @@
     android:padding="@dimen/large_space"
     app:cardCornerRadius="10dp"
     android:elevation="4dp"
+    android:layout_margin="8dp"
     android:foreground="?attr/selectableItemBackground"
     app:cardBackgroundColor="@color/deep_purple_50"
 
@@ -21,12 +22,9 @@
             android:id="@+id/btn_call_video"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
             android:src="@drawable/video_chat_24"
             app:layout_constraintBottom_toBottomOf="@+id/img_avatar"
-            app:layout_constraintEnd_toStartOf="@+id/text_status"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toEndOf="@+id/btn_call_audio"
+            app:layout_constraintEnd_toStartOf="@+id/guideline5"
             app:layout_constraintTop_toTopOf="@+id/img_avatar"
             app:layout_constraintVertical_bias="0.47"
             tools:ignore="ContentDescription,SpeakableTextPresentCheck,TouchTargetSizeCheck,ImageContrastCheck" />
@@ -35,12 +33,10 @@
             android:id="@+id/img_avatar"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:layout_marginStart="@dimen/medium_space"
+            android:layout_marginStart="4dp"
             android:layout_marginTop="@dimen/small_space"
             android:layout_marginBottom="@dimen/small_space"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0"
@@ -52,13 +48,11 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
             android:text="Minh Trần"
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@+id/img_avatar"
             app:layout_constraintEnd_toStartOf="@+id/btn_call_audio"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/img_avatar"
             app:layout_constraintTop_toTopOf="@+id/img_avatar"
             app:layout_constraintVertical_bias="0.512"
@@ -70,11 +64,11 @@
             android:layout_height="wrap_content"
 
             app:layout_constraintBottom_toBottomOf="@+id/img_avatar"
+            app:layout_constraintEnd_toStartOf="@+id/btn_call_video"
             app:layout_constraintTop_toTopOf="@+id/img_avatar"
             app:layout_constraintVertical_bias="0.47"
             app:srcCompat="@drawable/ic_call_24"
-            tools:ignore="ContentDescription,MissingConstraints,SpeakableTextPresentCheck,TouchTargetSizeCheck,ImageContrastCheck"
-            tools:layout_editor_absoluteX="221dp" />
+            tools:ignore="ContentDescription,MissingConstraints,SpeakableTextPresentCheck,TouchTargetSizeCheck,ImageContrastCheck" />
 
         <TextView
             android:id="@+id/text_status"
@@ -83,11 +77,21 @@
             android:layout_marginEnd="16dp"
             android:text="@string/Status_act"
             android:textColor="#7CB342"
-            android:textSize="20sp"
+            android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="@+id/img_avatar"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/guideline5"
             app:layout_constraintTop_toTopOf="@+id/img_avatar"
             app:layout_constraintVertical_bias="0.512" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+
+            app:layout_constraintGuide_percent="0.8" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.cardview.widget.CardView>

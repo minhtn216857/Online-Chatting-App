@@ -1,6 +1,7 @@
 package com.example.minh_messenger_test.ui.voicecall
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Adapter
@@ -21,6 +22,7 @@ class VideoCallAdapter(
         private val binding: ItemAudioCallBinding,
         private val listener: OnItemClickListener
     ): RecyclerView.ViewHolder(binding.root) {
+        @SuppressLint("ResourceAsColor")
         fun bind(friendWithStatus: Pair<Account, String>){
             binding.textUsernameCall.text = friendWithStatus.first.displayName
             Glide.with(binding.imgAvatar)
@@ -44,6 +46,7 @@ class VideoCallAdapter(
                     "OFFLINE" ->{
                         btnCallVideo.isVisible = false
                         btnCallAudio.isVisible = false
+                        textStatus.setTextColor(R.color.black)
                     }
                     "IN_CALL" ->{
                         btnCallVideo.isVisible = false
@@ -57,6 +60,8 @@ class VideoCallAdapter(
 
     @SuppressLint("NotifyDataSetChanged")
     fun updateStatus(list: List<Pair<Account, String>>){
+        Log.d("VideoCallAdapter", "Updating status with list: $list") // Log danh sách mới
+
         this.friendsWithStatus.clear()
         this.friendsWithStatus.addAll(list)
         notifyDataSetChanged()
@@ -75,13 +80,14 @@ class VideoCallAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val friendWithStatus = friendsWithStatus[position]
+        Log.d("FriendStatus", "Friend: ${friendWithStatus.first}, Status: ${friendWithStatus.second}")
         holder.bind(friendWithStatus)
     }
 
-
+    interface OnItemClickListener {
+        fun onVideoCallClicked(username: String)
+        fun onAudioCallClicked(username: String)
+    }
 }
 
-interface OnItemClickListener {
-    fun onVideoCallClicked(username: String)
-    fun onAudioCallClicked(username: String)
-}
+

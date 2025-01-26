@@ -10,6 +10,7 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.SeekBar
 import androidx.core.app.PendingIntentCompat.send
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.disklrucache.DiskLruCache.Editor
@@ -18,12 +19,13 @@ import com.example.minh_messenger_test.R
 import com.example.minh_messenger_test.databinding.FragmentChatBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ChatFragment : Fragment() {
 
     private lateinit var binding: FragmentChatBinding
-    private lateinit var chatViewModel: ChatViewModel
+    private lateinit var chatViewModel: ChatViewModel // Sử dụng Hilt để inject ViewModel
     private lateinit var navBar: BottomNavigationView
     private lateinit var chatAdapter: ChatAdapter
 
@@ -88,9 +90,7 @@ class ChatFragment : Fragment() {
             send()
         }
 
-        binding.imageCall.setOnClickListener{
-            voiceCall()
-        }
+
 
         binding.chatEditInput.setOnEditorActionListener{_, actionId, _ ->
             if(actionId  == EditorInfo.IME_ACTION_SEND){
@@ -120,9 +120,6 @@ class ChatFragment : Fragment() {
         imm.hideSoftInputFromWindow(binding.root.windowToken, 0)
     }
 
-    private fun voiceCall() {
-        TODO("Not yet implemented")
-    }
 
     private fun send() {
         binding.chatEditInput.text?.let{ text ->
