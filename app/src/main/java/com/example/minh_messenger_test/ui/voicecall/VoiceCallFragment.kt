@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -16,6 +17,8 @@ import com.example.minh_messenger_test.data.source.Repository
 import com.example.minh_messenger_test.databinding.FragmentVoiceCallBinding
 import com.example.minh_messenger_test.ui.login.LoginViewModel
 import com.example.minh_messenger_test.ui.login.LoginViewModelFactory
+import com.example.minh_messenger_test.ui.voicecall.repository.MainRepository
+import com.example.minh_messenger_test.utils.getCameraAndMicPermission
 import com.google.firebase.Firebase
 import com.google.firebase.database.database
 import dagger.hilt.android.AndroidEntryPoint
@@ -27,6 +30,7 @@ class VoiceCallFragment : Fragment() {
     private lateinit var videoCallViewModel: VideoCallViewModel
     private lateinit var videoCallAdapter: VideoCallAdapter
 //    private lateinit var loginViewModel: LoginViewModel
+    @Inject lateinit var mainRepository: MainRepository
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -51,11 +55,25 @@ class VoiceCallFragment : Fragment() {
     private fun setupRecycler() {
         val listener = object: VideoCallAdapter.OnItemClickListener{
             override fun onVideoCallClicked(username: String) {
-                TODO("Not yet implemented")
+                (activity as AppCompatActivity).getCameraAndMicPermission {
+                    mainRepository.sendConnectionRequest(username, true){
+                        if(it){
+                            //we have to start video call
+                            //we wanna create an intent to move to call activity
+                        }
+                    }
+                }
             }
 
             override fun onAudioCallClicked(username: String) {
-                TODO("Not yet implemented")
+                (activity as AppCompatActivity).getCameraAndMicPermission {
+                    mainRepository.sendConnectionRequest(username, false){
+                        if(it){
+                            //we have to start video call
+                            //we wanna create an intent to move to call activity
+                        }
+                    }
+                }
             }
 
         }

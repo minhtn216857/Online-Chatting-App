@@ -27,9 +27,11 @@ import com.example.minh_messenger_test.R
 import com.example.minh_messenger_test.data.model.Account
 import com.example.minh_messenger_test.data.model.AccountStatus
 import com.example.minh_messenger_test.databinding.ActivityMainBinding
+import com.example.minh_messenger_test.service.MainServiceRepository
 import com.example.minh_messenger_test.ui.login.LoginState
 import com.example.minh_messenger_test.ui.login.LoginViewModel
 import com.example.minh_messenger_test.ui.login.LoginViewModelFactory
+import com.example.minh_messenger_test.ui.voicecall.repository.MainRepository
 import com.example.minh_messenger_test.utils.MessengerUtils
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.Firebase
@@ -51,6 +53,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var loginViewModel: LoginViewModel
     @Inject lateinit var databaseRef: DatabaseReference
+    @Inject lateinit var mainRepository: MainRepository
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -88,7 +91,6 @@ class MainActivity : AppCompatActivity() {
         retrieveToken()
         setupViewModel()
         setupDrawerLayoutMenuItemSelectedListener()
-
 //        // Lấy FCM Registration Token khi ứng dụng khởi chạy
 //        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
 //            if (task.isSuccessful) {
@@ -100,6 +102,8 @@ class MainActivity : AppCompatActivity() {
 //        }
 
     }
+
+
 
     private fun setupNavigation() {
         // Lấy NavHostFragment từ FragmentManager thông qua ID của nav_host_fragment
@@ -227,7 +231,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun logout(){
         val sharedPreferences = (application as MessengerApplication).sharedReference
-        val username = loginViewModel.loggedInAccount.value!!.username
+        val username = LoginViewModel.currentAccount.value!!.username
         updateStatusLogoutRealtimeDatabase(username)
         loginViewModel.saveLoginState(sharedPreferences, false)
         loginViewModel.updateLoginState(null)

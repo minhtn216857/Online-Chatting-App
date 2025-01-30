@@ -76,7 +76,6 @@ class LoginViewModel @Inject constructor(
         editor.putString(LoginFragment.PREF_USERNAME, accToSave?.username)
         editor.putBoolean(LoginFragment.PREFF_LOGIN_STATE, state)
         editor.apply()
-
     }
 
     fun loginFormChanged(username: String, password: String) {

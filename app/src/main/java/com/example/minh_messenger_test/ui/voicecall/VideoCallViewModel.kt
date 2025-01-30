@@ -1,6 +1,5 @@
 package com.example.minh_messenger_test.ui.voicecall
 
-import android.provider.MediaStore.Video
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

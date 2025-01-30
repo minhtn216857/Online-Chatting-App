@@ -9,6 +9,7 @@ import com.example.minh_messenger_test.data.source.Repository
 import com.example.minh_messenger_test.data.source.local.DefaultLocalDataSource
 import com.example.minh_messenger_test.data.source.local.MessengerDatabase
 import com.example.minh_messenger_test.data.source.remote.DefaultRemoteDataSource
+import com.example.minh_messenger_test.ui.voicecall.repository.MainRepository
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 
@@ -19,6 +20,7 @@ class MessengerApplication: Application() {
     private lateinit var remoteDataSource: DataSource.RemoteDataSource
     @Inject lateinit var repository: Repository
     lateinit var sharedReference: SharedPreferences
+
 
     override fun onCreate() {
         super.onCreate()

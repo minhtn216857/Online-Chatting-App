@@ -1,4 +1,5 @@
 package com.example.minh_messenger_test.service
 
-class MainServiceActions {
+enum class MainServiceActions {
+    START_SERVICE, SETUP_VIEWS, END_CALL, SWITCH_CAMERA
 }

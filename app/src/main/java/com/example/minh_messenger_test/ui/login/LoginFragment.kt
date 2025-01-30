@@ -21,9 +21,11 @@ import com.example.minh_messenger_test.data.source.remote.DefaultRemoteDataSourc
 import com.example.minh_messenger_test.databinding.FragmentLoginBinding
 import com.example.minh_messenger_test.ui.register.RegisterViewModel
 import com.example.minh_messenger_test.ui.register.RegisterViewModelFactory
+import com.example.minh_messenger_test.ui.voicecall.repository.MainRepository
 import com.example.minh_messenger_test.utils.MessengerUtils.afterTextChanged
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class LoginFragment : Fragment() {
@@ -32,6 +34,7 @@ class LoginFragment : Fragment() {
     private lateinit var navController: NavController
     private lateinit var savedStateHandle: SavedStateHandle
     private var isButtonLoginClicked = false
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {

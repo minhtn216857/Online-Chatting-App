@@ -16,7 +16,7 @@ android {
     defaultConfig {
         applicationId = "com.example.minh_messenger_test"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 33
         versionCode = 1
         versionName = "1.0"
 
@@ -60,6 +60,9 @@ android {
 
 dependencies {
     implementation (libs.google.auth.library.oauth2.http)
+
+    implementation(libs.permissionx)
+
 
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)

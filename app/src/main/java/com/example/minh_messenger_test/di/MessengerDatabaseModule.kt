@@ -4,8 +4,8 @@ import android.content.Context
 import androidx.room.Room
 import com.example.minh_messenger_test.data.source.local.AccountDao
 import com.example.minh_messenger_test.data.source.local.MessengerDatabase
-import com.google.android.gms.common.internal.safeparcel.SafeParcelable
-import com.google.firebase.Firebase
+import com.example.minh_messenger_test.ui.voicecall.firebaseClient.FirebaseClient
+import com.example.minh_messenger_test.ui.voicecall.repository.MainRepository
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.gson.Gson
@@ -23,6 +23,15 @@ object MessengerDatabaseModule {
 
     @Provides
     @Singleton
+    fun provideMainRepository(
+        gson: Gson,
+        firebaseClient: FirebaseClient
+    ): MainRepository {
+        return MainRepository(gson, firebaseClient)
+    }
+
+    @Provides
+    @Singleton
     fun provideMessengerDatabase(@ApplicationContext context: Context): MessengerDatabase{
         return Room.databaseBuilder(
             context.applicationContext,
@@ -31,6 +40,9 @@ object MessengerDatabaseModule {
         ).fallbackToDestructiveMigrationFrom()
             .build()
     }
+
+    @Provides
+    fun provideContext(@ApplicationContext context:Context) : Context = context.applicationContext
 
     @Provides
     fun provideAccountDao(database: MessengerDatabase): AccountDao{

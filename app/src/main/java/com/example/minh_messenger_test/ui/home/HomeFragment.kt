@@ -1,6 +1,7 @@
 package com.example.minh_messenger_test.ui.home
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -14,13 +15,16 @@ import com.example.minh_messenger_test.MessengerApplication
 import com.example.minh_messenger_test.R
 import com.example.minh_messenger_test.data.model.Account
 import com.example.minh_messenger_test.databinding.FragmentHomeBinding
+import com.example.minh_messenger_test.service.MainServiceRepository
 import com.example.minh_messenger_test.ui.chat.ChatViewModel
 import com.example.minh_messenger_test.ui.chat.ChatViewModelFactory
 import com.example.minh_messenger_test.ui.login.LoginFragment
 import com.example.minh_messenger_test.ui.login.LoginViewModel
 import com.example.minh_messenger_test.ui.login.LoginViewModelFactory
+import com.example.minh_messenger_test.ui.voicecall.repository.MainRepository
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 import kotlin.math.log
 
 @AndroidEntryPoint
@@ -31,6 +35,11 @@ class HomeFragment : Fragment() {
     private lateinit var homeViewModel: HomeViewModel
     private lateinit var accountAdapter: AccountAdapter
     private lateinit var chatViewModel: ChatViewModel
+    @Inject
+    lateinit var mainServiceRepository: MainServiceRepository
+
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,7 +59,12 @@ class HomeFragment : Fragment() {
                     navigateToLoginFragment()
                 }
             }
+    }
 
+    private fun startMyService(username: String) {
+//        val username = LoginViewModel.currentAccount.value!!.username
+        Log.d("started", "started")
+        mainServiceRepository.startService(username)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -81,9 +95,13 @@ class HomeFragment : Fragment() {
             if (!it.status || it.username == null) {
                 navigateToLoginFragment()
             } else {
+                Log.d("username", "${it.username}")
                 homeViewModel.loadFriendAccounts(it.username)
                 // load thong tin tai khoan da dang nhap tu local
                 loginViewModel.loadLocalAccountInfo(it.username)
+                startMyService(it.username)
+
+
             }
         }
         homeViewModel.friendAccounts.observe(viewLifecycleOwner) {
