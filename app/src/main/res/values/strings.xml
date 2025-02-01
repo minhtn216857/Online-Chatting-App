@@ -32,4 +32,6 @@
     <string name="chat_edit_text">Type a message</string>
     <string name="desc_item_message">User avatar display</string>
     <string name="Status_act">Online</string>
+    <string name="text_accept_call">Accept</string>
+    <string name="text_decline_call">Decline</string>
 </resources>

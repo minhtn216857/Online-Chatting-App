@@ -15,6 +15,7 @@ import com.example.minh_messenger_test.MessengerApplication
 import com.example.minh_messenger_test.R
 import com.example.minh_messenger_test.data.model.Account
 import com.example.minh_messenger_test.databinding.FragmentHomeBinding
+import com.example.minh_messenger_test.service.MainService
 import com.example.minh_messenger_test.service.MainServiceRepository
 import com.example.minh_messenger_test.ui.chat.ChatViewModel
 import com.example.minh_messenger_test.ui.chat.ChatViewModelFactory
@@ -22,13 +23,14 @@ import com.example.minh_messenger_test.ui.login.LoginFragment
 import com.example.minh_messenger_test.ui.login.LoginViewModel
 import com.example.minh_messenger_test.ui.login.LoginViewModelFactory
 import com.example.minh_messenger_test.ui.voicecall.repository.MainRepository
+import com.example.minh_messenger_test.utils.DataModel
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlin.math.log
 
 @AndroidEntryPoint
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(){
     private lateinit var binding: FragmentHomeBinding
     private lateinit var navController: NavController
     private lateinit var loginViewModel: LoginViewModel
@@ -37,8 +39,6 @@ class HomeFragment : Fragment() {
     private lateinit var chatViewModel: ChatViewModel
     @Inject
     lateinit var mainServiceRepository: MainServiceRepository
-
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,11 +61,11 @@ class HomeFragment : Fragment() {
             }
     }
 
-    private fun startMyService(username: String) {
-//        val username = LoginViewModel.currentAccount.value!!.username
-        Log.d("started", "started")
-        mainServiceRepository.startService(username)
-    }
+//    private fun startMyService(username: String) {
+////        val username = LoginViewModel.currentAccount.value!!.username
+//        Log.d("started", "started")
+//        mainServiceRepository.startService(username)
+//    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -95,11 +95,11 @@ class HomeFragment : Fragment() {
             if (!it.status || it.username == null) {
                 navigateToLoginFragment()
             } else {
-                Log.d("username", "${it.username}")
                 homeViewModel.loadFriendAccounts(it.username)
                 // load thong tin tai khoan da dang nhap tu local
                 loginViewModel.loadLocalAccountInfo(it.username)
-                startMyService(it.username)
+//                MainService.listener = this
+//                startMyService(it.username)
 
 
             }
@@ -148,4 +148,5 @@ class HomeFragment : Fragment() {
         binding = FragmentHomeBinding.inflate(layoutInflater, container, false)
         return binding.root
     }
+
 }

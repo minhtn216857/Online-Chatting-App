@@ -12,6 +12,8 @@ import androidx.core.app.NotificationCompat
 import com.example.minh_messenger_test.R
 import com.example.minh_messenger_test.ui.voicecall.repository.MainRepository
 import com.example.minh_messenger_test.utils.DataModel
+import com.example.minh_messenger_test.utils.DataModelType
+import com.example.minh_messenger_test.utils.isValid
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -24,8 +26,12 @@ class MainService : Service(), MainRepository.Listener {
 
     @Inject lateinit var mainRepository: MainRepository // ✅ Hilt sẽ inject
 
+    companion object {
+        var listener: Listener? = null
+    }
+
     override fun onCreate() {
-        super.onCreate()  // ✅ Gọi super để Hilt hoàn tất inject
+        super.onCreate()
 
         notificationManager = getSystemService(
             NotificationManager::class.java)
@@ -39,14 +45,31 @@ class MainService : Service(), MainRepository.Listener {
 
         val username = intent?.getStringExtra("username")
 
+        // 🔥 Đăng ký lại Firebase khi Service restart
+
         intent?.let { incomingIntent ->
             when (incomingIntent.action) {
                 MainServiceActions.START_SERVICE.name -> handleStartService(username!!)
+                MainServiceActions.SETUP_VIEWS.name -> handleSetupViews(incomingIntent)
                 MainServiceActions.END_CALL.name -> handleEndCall()
             }
         }
         return START_STICKY
     }
+
+    private fun handleSetupViews(incomingIntent: Intent){
+        val isCaller = incomingIntent.getBooleanExtra("isCaller", false)
+        val target = incomingIntent.getStringExtra("target")
+        val isVideoCall = incomingIntent.getBooleanExtra("isVideoCall", true)
+        mainRepository.setTarget(target)
+        //initialize our widgets and start streaming our video and audio source
+        //and get prepared for call
+
+        if(!isCaller){
+            mainRepository.startCall()
+        }
+    }
+
 
     private fun handleStartService(username: String) {
         if (!isServiceRunning) {
@@ -84,6 +107,19 @@ class MainService : Service(), MainRepository.Listener {
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onLatestEventReceived(data: DataModel) {
-        Log.d("HIENLENDI", "onLatestEventReceived: $data")
+        Log.d("FirebaseClient", "🔥 Data received in MainService: $data")
+        if(data.isValid()){
+            when(data.type){
+                DataModelType.StartVideoCall,
+                DataModelType.StartAudioCall -> {
+                        listener?.onCallReceived(data)
+                    }
+                else -> Unit
+            }
+        }
+    }
+
+    interface Listener{
+        fun onCallReceived(model: DataModel)
     }
 }

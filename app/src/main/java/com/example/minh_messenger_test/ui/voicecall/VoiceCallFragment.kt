@@ -1,5 +1,6 @@
 package com.example.minh_messenger_test.ui.voicecall
 
+import android.content.Intent
 import android.os.Bundle
 import android.provider.MediaStore.Video
 import android.util.Log
@@ -13,7 +14,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.example.minh_messenger_test.MessengerApplication
 import com.example.minh_messenger_test.R
-import com.example.minh_messenger_test.data.source.Repository
 import com.example.minh_messenger_test.databinding.FragmentVoiceCallBinding
 import com.example.minh_messenger_test.ui.login.LoginViewModel
 import com.example.minh_messenger_test.ui.login.LoginViewModelFactory
@@ -31,6 +31,8 @@ class VoiceCallFragment : Fragment() {
     private lateinit var videoCallAdapter: VideoCallAdapter
 //    private lateinit var loginViewModel: LoginViewModel
     @Inject lateinit var mainRepository: MainRepository
+
+    private val username = LoginViewModel.currentAccount.value!!.username
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -54,23 +56,41 @@ class VoiceCallFragment : Fragment() {
 
     private fun setupRecycler() {
         val listener = object: VideoCallAdapter.OnItemClickListener{
-            override fun onVideoCallClicked(username: String) {
+            override fun onVideoCallClicked(target: String) {
+                Log.d("TARGET", "$target")
                 (activity as AppCompatActivity).getCameraAndMicPermission {
-                    mainRepository.sendConnectionRequest(username, true){
+                    mainRepository.sendConnectionRequest(
+                        sender = username,
+                        target,
+                        true){
                         if(it){
                             //we have to start video call
                             //we wanna create an intent to move to call activity
+                            startActivity(Intent(requireActivity(),
+                                VoiceCallActivity::class.java).apply {
+                                    putExtra("target", target)
+                                putExtra("isVideoCall", true)
+                                putExtra("isCaller", true)
+                            })
+
                         }
                     }
                 }
             }
 
-            override fun onAudioCallClicked(username: String) {
+            override fun onAudioCallClicked(target: String) {
                 (activity as AppCompatActivity).getCameraAndMicPermission {
-                    mainRepository.sendConnectionRequest(username, false){
+                    mainRepository.sendConnectionRequest(username, target, false){
                         if(it){
+
                             //we have to start video call
                             //we wanna create an intent to move to call activity
+                            startActivity(Intent(requireContext(),
+                                VoiceCallActivity::class.java).apply {
+                                putExtra("target", target)
+                                putExtra("isVideoCall", false)
+                                putExtra("isCaller", true)
+                            })
                         }
                     }
                 }
@@ -91,7 +111,7 @@ class VoiceCallFragment : Fragment() {
             VideoCallViewModelFactory(repository, databaseRef))[VideoCallViewModel::class.java]
 
 
-        videoCallViewModel.loadFriendWithStatus(LoginViewModel.currentAccount.value!!.username)
+        videoCallViewModel.loadFriendWithStatus(username)
         videoCallViewModel.friendsAccWithStatus.observe(viewLifecycleOwner){
             Log.d("MainActivity", "subscribeObservers: $it")
             videoCallAdapter.updateStatus(it)

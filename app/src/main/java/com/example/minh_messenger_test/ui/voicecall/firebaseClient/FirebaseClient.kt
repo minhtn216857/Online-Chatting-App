@@ -20,53 +20,83 @@ class FirebaseClient @Inject constructor(
 
     private val currentAccount: String? = null
 
-    fun subscribeForLatestEvent(username: String, listener: Listener){
+//    fun subscribeForLatestEvent(username: String, listener: Listener){
+//        try {
+////            val currentAccount = LoginViewModel.currentAccount.value?.username
+//            val currentAccount = username
+//            Log.d("FirebaseClient", "Subscribing for latest events for user: $currentAccount") // 🔥 Debug log
+//
+//            databaseRef.child(currentAccount).child(LATEST_EVENT).addValueEventListener(
+//                object : ValueEventListener {
+//                    override fun onDataChange(snapshot: DataSnapshot) {
+//                        Log.d("FirebaseClient", "DataSnapshot received: $snapshot") // 🔥 Debug log
+//                        val event: DataModel? = try {
+//                            gson.fromJson(snapshot.value.toString(), DataModel::class.java)
+//                        } catch (e: Exception) {
+//                            null
+//                        }
+//
+//                        event?.let {
+//                            Log.d("FirebaseClient", "Parsed event: $it") // 🔥 Debug log
+//                            listener.onLatestEventReceived(it)
+//                        }
+//                    }
+//
+//                    override fun onCancelled(error: DatabaseError) {
+//                        Log.e("FirebaseClient", "Firebase subscription cancelled: ${error.message}")
+//                    }
+//                }
+//            )
+//        } catch (e: Exception) {
+//            Log.e("FirebaseClient", "Error in subscribeForLatestEvent: ${e.message}")
+//        }
+//    }
+    fun subscribeForLatestEvent(username: String, listener: Listener) {
         try {
-//            val currentAccount = LoginViewModel.currentAccount.value?.username
-            val currentAccount = username
+            Log.d("FirebaseClient", "Subscribing for latest events for user: $username") // Debug log
 
-            Log.d("FirebaseClient", "Subscribing for latest events for user: $currentAccount") // 🔥 Debug log
-
-            databaseRef.child(currentAccount).child(LATEST_EVENT).addListenerForSingleValueEvent(
+            databaseRef.child(username).child(LATEST_EVENT).addValueEventListener(
                 object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
-                        Log.d("FirebaseClient", "DataSnapshot received: $snapshot") // 🔥 Debug log
+                        Log.d("FirebaseClient", "📥 DataSnapshot received: $snapshot")
 
+                        val eventJson = snapshot.value?.toString()
                         val event: DataModel? = try {
-                            gson.fromJson(snapshot.value.toString(), DataModel::class.java)
+                            gson.fromJson(eventJson, DataModel::class.java)
                         } catch (e: Exception) {
-                            Log.e("FirebaseClient", "Error parsing DataModel: ${e.message}")
                             null
                         }
 
                         event?.let {
-                            Log.d("FirebaseClient", "Parsed event: $it") // 🔥 Debug log
                             listener.onLatestEventReceived(it)
-                        } ?: Log.e("FirebaseClient", "Event is null")
+                        }
                     }
 
                     override fun onCancelled(error: DatabaseError) {
-                        Log.e("FirebaseClient", "Firebase subscription cancelled: ${error.message}")
+//                        Log.e("FirebaseClient", "❌ Firebase subscription cancelled: ${error.message}")
                     }
                 }
             )
         } catch (e: Exception) {
-            Log.e("FirebaseClient", "Error in subscribeForLatestEvent: ${e.message}")
+            Log.e("FirebaseClient", "🔥 Error in subscribeForLatestEvent: ${e.message}")
         }
     }
 
 
-    fun sendMessageToOtherClient(message: DataModel, success: (Boolean) ->Unit){
-        val convertedMessage = gson.toJson(message.copy(sender = currentAccount))
+    fun sendMessageToOtherClient(username: String,message: DataModel, success: (Boolean) -> Unit) {
+        val convertedMessage = gson.toJson(message.copy(sender = username))
+        Log.d("FirebaseClient", "📤 Sending message to: ${message.target}, Data: $convertedMessage") // Debug log
+
         databaseRef.child(message.target).child(LATEST_EVENT).setValue(convertedMessage)
-            .addOnSuccessListener {
+            .addOnCompleteListener {
+                Log.d("FirebaseClient", "✅ Message sent successfully")
                 success(true)
             }
-            .addOnFailureListener{
+            .addOnFailureListener { e ->
                 success(false)
             }
-    }
 
+    }
 
 
     interface Listener{

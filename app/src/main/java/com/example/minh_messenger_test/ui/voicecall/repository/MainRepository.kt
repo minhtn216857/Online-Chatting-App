@@ -14,7 +14,7 @@ class MainRepository @Inject constructor(
     private val firebaseClient: FirebaseClient
 ) {
     var listener: Listener? = null
-
+    private var target: String? = null
 
     fun initFirebase(username: String){
         Log.d("MainRepository", "initFirebase() called") // 🔥 Debug log
@@ -27,16 +27,20 @@ class MainRepository @Inject constructor(
             }
         })
 
-        Log.d("MainRepository", "Listener is set: $listener")
 }
 
-    fun sendConnectionRequest(target: String, isVideoCall: Boolean, success: (Boolean) ->Unit) {
+    fun sendConnectionRequest(sender: String, target: String, isVideoCall: Boolean, success: (Boolean) ->Unit) {
         firebaseClient.sendMessageToOtherClient(
+            sender,
             DataModel(
                 type = if(isVideoCall) DataModelType.StartVideoCall else DataModelType.StartAudioCall,
                 target = target
             ),success
         )
+    }
+
+    fun setTarget(target: String?) {
+        this.target = target
     }
 
     interface Listener{

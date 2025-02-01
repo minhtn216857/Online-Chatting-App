@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.util.Log
+import com.example.minh_messenger_test.ui.voicecall.VoiceCallActivity
 import com.example.minh_messenger_test.ui.voicecall.repository.MainRepository
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -38,6 +39,19 @@ class MainServiceRepository @Inject constructor(
         }else{
             context.startService(intent)
         }
+
+    }
+
+    fun setupViews(videoCall: Boolean, caller: Boolean, target: String?) {
+        val intent = Intent(context, VoiceCallActivity::class.java)
+        intent.apply {
+            action = MainServiceActions.SETUP_VIEWS.name
+            putExtra("isVideoCall", videoCall)
+            putExtra("isCaller", caller)
+            putExtra("target", target)
+        }
+        startServiceIntent(intent)
+
 
     }
 }

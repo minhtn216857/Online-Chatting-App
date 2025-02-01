@@ -85,8 +85,8 @@ class VideoCallAdapter(
     }
 
     interface OnItemClickListener {
-        fun onVideoCallClicked(username: String)
-        fun onAudioCallClicked(username: String)
+        fun onVideoCallClicked(target: String)
+        fun onAudioCallClicked(target: String)
     }
 }
 

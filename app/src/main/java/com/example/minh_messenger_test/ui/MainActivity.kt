@@ -1,6 +1,8 @@
 package com.example.minh_messenger_test.ui
 
 import android.Manifest
+import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -15,6 +17,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
@@ -27,12 +30,17 @@ import com.example.minh_messenger_test.R
 import com.example.minh_messenger_test.data.model.Account
 import com.example.minh_messenger_test.data.model.AccountStatus
 import com.example.minh_messenger_test.databinding.ActivityMainBinding
+import com.example.minh_messenger_test.service.MainService
 import com.example.minh_messenger_test.service.MainServiceRepository
 import com.example.minh_messenger_test.ui.login.LoginState
 import com.example.minh_messenger_test.ui.login.LoginViewModel
 import com.example.minh_messenger_test.ui.login.LoginViewModelFactory
+import com.example.minh_messenger_test.ui.voicecall.VoiceCallActivity
 import com.example.minh_messenger_test.ui.voicecall.repository.MainRepository
+import com.example.minh_messenger_test.utils.DataModel
+import com.example.minh_messenger_test.utils.DataModelType
 import com.example.minh_messenger_test.utils.MessengerUtils
+import com.example.minh_messenger_test.utils.getCameraAndMicPermission
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.Firebase
 import com.google.firebase.database.DatabaseReference
@@ -47,13 +55,14 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), MainService.Listener {
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var loginViewModel: LoginViewModel
     @Inject lateinit var databaseRef: DatabaseReference
     @Inject lateinit var mainRepository: MainRepository
+    @Inject lateinit var mainServiceRepository: MainServiceRepository
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -91,19 +100,13 @@ class MainActivity : AppCompatActivity() {
         retrieveToken()
         setupViewModel()
         setupDrawerLayoutMenuItemSelectedListener()
-//        // Lấy FCM Registration Token khi ứng dụng khởi chạy
-//        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
-//            if (task.isSuccessful) {
-//                MessengerUtils.token = task.result // Lưu token vào biến toàn cục
-//                Log.d("FCM", "Token initialized: ${MessengerUtils.token}")
-//            } else {
-//                Log.e("FCM", "Failed to fetch token", task.exception)
-//            }
-//        }
-
     }
 
-
+    private fun startMyService(username: String) {
+//        val username = LoginViewModel.currentAccount.value!!.username
+        Log.d("started", "started")
+        mainServiceRepository.startService(username)
+    }
 
     private fun setupNavigation() {
         // Lấy NavHostFragment từ FragmentManager thông qua ID của nav_host_fragment
@@ -194,10 +197,23 @@ class MainActivity : AppCompatActivity() {
             this,
             LoginViewModelFactory(repository)
         )[LoginViewModel::class.java]
+
         val sharedPref = (application as MessengerApplication).sharedReference
         loginViewModel.getLoggedInState(sharedPref)
         loginViewModel.loggedInAccount.observe(this){
             setupDrawerMenuItem(it)
+        }
+        loginViewModel.loginState.observe(this) {
+            if (!it.status || it.username == null) {
+                Log.d("Login", "Failuare Login")
+            } else {
+                Log.d("username", "${it.username}")
+                // load thong tin tai khoan da dang nhap tu local
+                MainService.listener = this
+
+                startMyService(it.username)
+
+            }
         }
     }
 
@@ -240,6 +256,31 @@ class MainActivity : AppCompatActivity() {
     private fun updateStatusLogoutRealtimeDatabase(username: String){
         val databaseRef = Firebase.database.reference
         databaseRef.child(username).child("status").setValue(AccountStatus.OFFLINE)
+    }
+
+    @SuppressLint("SetTextI18n")
+    override fun onCallReceived(model: DataModel) {
+        binding.includeMain.incomingCallLayout.apply {
+            val isVideoCall = model.type == DataModelType.StartVideoCall
+            val isVideoCallText = if(isVideoCall) "Video" else "Audio"
+            txtIncomingCall.text = "${model.sender} is ${isVideoCallText} Calling you"
+            incomingCallLayout.isVisible = true
+            btnYesCall.setOnClickListener {
+                getCameraAndMicPermission {
+                    incomingCallLayout.isVisible = false
+                    startActivity(
+                        Intent(this@MainActivity,
+                            VoiceCallActivity::class.java).apply {
+                                putExtra("target", model.sender)
+                                putExtra("isVideoCall",isVideoCall)
+                                putExtra("isCaller", false)
+                    })
+                }
+            }
+            btnNoCall.setOnClickListener {
+                incomingCallLayout.isVisible = false
+            }
+        }
     }
 
 }

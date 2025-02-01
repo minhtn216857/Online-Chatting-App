@@ -62,6 +62,7 @@ dependencies {
     implementation (libs.google.auth.library.oauth2.http)
 
     implementation(libs.permissionx)
+    implementation(libs.webrtc)
 
 
     implementation(platform(libs.firebase.bom))

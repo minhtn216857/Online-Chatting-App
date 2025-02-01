@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
     app:startDestination="@id/nav_chat">
     <include app:graph="@navigation/nav_chat" />
     <include app:graph="@navigation/nav_call"/>
     <include app:graph="@navigation/nav_phonebook" />
+    <activity
+        android:id="@+id/voiceCallActivity"
+        android:name="com.example.minh_messenger_test.ui.voicecall.VoiceCallActivity"
+        android:label="activity_voice_call"
+        tools:layout="@layout/activity_voice_call" />
 </navigation>
