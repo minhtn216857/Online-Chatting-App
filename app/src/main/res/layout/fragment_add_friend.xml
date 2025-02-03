@@ -36,6 +36,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:ems="10"
+        android:hint="Ví dụ: minh35525"
         android:inputType="text"
         android:text=""
         app:layout_constraintEnd_toEndOf="@+id/text_friend"

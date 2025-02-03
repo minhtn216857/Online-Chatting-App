@@ -13,6 +13,7 @@ import com.example.minh_messenger_test.utils.MessengerUtils
 import com.example.minh_messenger_test.data.model.Account
 import com.example.minh_messenger_test.data.model.AccountStatus
 import com.google.firebase.Firebase
+import com.google.firebase.database.core.Repo
 import com.google.firebase.database.database
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -33,7 +34,6 @@ class LoginViewModel @Inject constructor(
     val loginState: LiveData<LoginState> = _loginState
 
     fun login(username: String, password: String) {
-
         viewModelScope.launch(Dispatchers.IO) {
             val account = Account(
                 username,
@@ -46,6 +46,16 @@ class LoginViewModel @Inject constructor(
             }
             updateStatusLoginRealTimeDatabase(username)
             _loggedInAccount.postValue(result)
+        }
+    }
+
+    fun updateAccount(account: Account){
+        viewModelScope.launch(Dispatchers.IO){
+            val result = (repository as Repository.RemoteRepository).updateAccount(account)
+            if(result){
+                (repository as Repository.LocalRepository).updateLocalAccount(account)
+                _loggedInAccount.postValue(account)
+            }
         }
     }
 
@@ -103,6 +113,8 @@ class LoginViewModel @Inject constructor(
             updateCurrentAccount(result)
         }
     }
+
+
 
     fun updateLoginState(state: LoginState?) {
         if(state == null){

@@ -191,7 +191,6 @@ class MainActivity : AppCompatActivity(), MainService.Listener {
         }
     }
 
-
     private fun setupViewModel() {
         val repository = (application as MessengerApplication).repository
         loginViewModel = ViewModelProvider(
@@ -246,7 +245,13 @@ class MainActivity : AppCompatActivity(), MainService.Listener {
                 navController.navigate(R.id.add_friend_fragment)
                 binding.drawerLayout.closeDrawer(GravityCompat.START)
                 true
-            } else {
+            }
+            if(it.itemId == R.id.item_profile){
+                navController.navigate(R.id.profile_layout)
+                binding.drawerLayout.closeDrawer(GravityCompat.START)
+                true
+            }
+            else {
                 false
             }
 
