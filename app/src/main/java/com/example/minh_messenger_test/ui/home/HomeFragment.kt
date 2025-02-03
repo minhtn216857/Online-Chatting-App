@@ -1,16 +1,20 @@
 package com.example.minh_messenger_test.ui.home
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
 import com.example.minh_messenger_test.MessengerApplication
 import com.example.minh_messenger_test.R
 import com.example.minh_messenger_test.data.model.Account
@@ -39,7 +43,7 @@ class HomeFragment : Fragment(){
     private lateinit var chatViewModel: ChatViewModel
     @Inject
     lateinit var mainServiceRepository: MainServiceRepository
-
+    private lateinit var currentUser: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,12 +64,6 @@ class HomeFragment : Fragment(){
                 }
             }
     }
-
-//    private fun startMyService(username: String) {
-////        val username = LoginViewModel.currentAccount.value!!.username
-//        Log.d("started", "started")
-//        mainServiceRepository.startService(username)
-//    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -98,8 +96,7 @@ class HomeFragment : Fragment(){
                 homeViewModel.loadFriendAccounts(it.username)
                 // load thong tin tai khoan da dang nhap tu local
                 loginViewModel.loadLocalAccountInfo(it.username)
-//                MainService.listener = this
-//                startMyService(it.username)
+                currentUser = it.username
 
 
             }
@@ -134,6 +131,52 @@ class HomeFragment : Fragment(){
         binding.recyclerHome.addItemDecoration(divider)
         binding.progressBarHome.visibility = View.VISIBLE
 
+        setupSwipeToDismiss()
+    }
+
+    private fun setupSwipeToDismiss() {
+        val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
+            0, ItemTouchHelper.LEFT
+        ) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                return false
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.adapterPosition
+                showDeleteConfirmationDialog(position)
+            }
+
+        })
+        itemTouchHelper.attachToRecyclerView(binding.recyclerHome)
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private fun showDeleteConfirmationDialog(position: Int) {
+        val friendUser = accountAdapter.getAccountAt(position).username
+        AlertDialog.Builder(requireActivity())
+            .setTitle("Hủy kết bạn ")
+            .setMessage("Bạn có chắc muốn hủy kết bạn?")
+            .setPositiveButton("Có"){_, _ ->
+                unFriendUser(currentUser, friendUser)
+
+            }
+            .setNegativeButton("Hủy"){ dialog, _ ->
+                dialog.dismiss()
+                accountAdapter.notifyDataSetChanged()
+            }
+            .show()
+
+
+    }
+
+    private fun unFriendUser(currentUser: String, userFriend: String) {
+        homeViewModel.unFriend(currentUser, userFriend)
+        homeViewModel.loadFriendAccounts(currentUser)
     }
 
     private fun navigateToLoginFragment() {

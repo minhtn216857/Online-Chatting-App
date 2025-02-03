@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
@@ -12,6 +13,11 @@
         android:icon="@drawable/ic_dark_mode"
         android:title="@string/title_dark_mode"
         app:showAsAction="ifRoom|withText" />
+    <item
+        android:id="@+id/item_add_friend"
+        android:icon="@drawable/ic_add_friend"
+        android:title="Add Friend"
+        tools:ignore="HardcodedText" />
     <item
         android:id="@+id/item_waiting_message"
         android:icon="@drawable/ic_message"

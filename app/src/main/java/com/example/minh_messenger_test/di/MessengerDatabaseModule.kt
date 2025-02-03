@@ -6,6 +6,7 @@ import com.example.minh_messenger_test.data.source.local.AccountDao
 import com.example.minh_messenger_test.data.source.local.MessengerDatabase
 import com.example.minh_messenger_test.ui.voicecall.firebaseClient.FirebaseClient
 import com.example.minh_messenger_test.ui.voicecall.repository.MainRepository
+import com.example.minh_messenger_test.webrtc.WebRTCClient
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.gson.Gson
@@ -25,9 +26,10 @@ object MessengerDatabaseModule {
     @Singleton
     fun provideMainRepository(
         gson: Gson,
+        webRTCClient: WebRTCClient,
         firebaseClient: FirebaseClient
     ): MainRepository {
-        return MainRepository(gson, firebaseClient)
+        return MainRepository(gson, webRTCClient,firebaseClient)
     }
 
     @Provides

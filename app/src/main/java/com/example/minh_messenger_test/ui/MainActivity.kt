@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
@@ -229,19 +230,26 @@ class MainActivity : AppCompatActivity(), MainService.Listener {
         }
     }
 
-    private fun setupDrawerLayoutMenuItemSelectedListener(){
+    private fun setupDrawerLayoutMenuItemSelectedListener() {
         binding.navView.setNavigationItemSelectedListener {
-            if(it.title.toString().compareTo(getString(R.string.action_login)) == 0){
+            if (it.title.toString().compareTo(getString(R.string.action_login)) == 0) {
                 loginViewModel.updateLoginState(null)
                 binding.drawerLayout.closeDrawer(GravityCompat.START)
                 true
-            }else if(it.title.toString().compareTo(getString(R.string.action_logout)) == 0){
+            }
+            if (it.title.toString().compareTo(getString(R.string.action_logout)) == 0) {
                 logout()
                 binding.drawerLayout.closeDrawer(GravityCompat.START)
                 true
-            }else{
+            }
+            if(it.itemId == R.id.item_add_friend){
+                navController.navigate(R.id.add_friend_fragment)
+                binding.drawerLayout.closeDrawer(GravityCompat.START)
+                true
+            } else {
                 false
             }
+
         }
     }
 

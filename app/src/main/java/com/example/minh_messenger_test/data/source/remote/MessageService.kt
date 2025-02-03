@@ -16,6 +16,18 @@ interface MessageService {
     @POST("/")
     suspend fun createAccount(@Body account: Account): Response<ResponseResult>
 
+    @POST("/")
+    suspend fun addFriend(
+        @Query("username") username: String,
+        @Query("friend") friend: String
+    ): Response<ResponseResult>
+
+    @POST("/")
+    suspend fun unFriend(
+        @Query("username") username: String,
+        @Query("friend") friend: String
+    ): Response<ResponseResult>
+
     // Phương thức updateAccount để cập nhật tài khoản, sử dụng phương thức HTTP POST
     @POST("/")
     suspend fun updateAccount(@Body account: Account): Response<ResponseResult>

@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.minh_messenger_test.data.model.Account
 import com.example.minh_messenger_test.data.source.Repository
 import com.example.minh_messenger_test.ui.login.LoginViewModel
+import com.google.firebase.database.core.Repo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -26,6 +27,20 @@ class HomeViewModel @Inject constructor(
             _friendAccounts.postValue(result)
         }
     }
+
+    fun addFriend(username: String, usernameFriend: String){
+        viewModelScope.launch(Dispatchers.IO) {
+            (repository as Repository.RemoteRepository).addFriend(username, usernameFriend)
+        }
+    }
+
+    fun unFriend(currentUser: String, userFriend: String) {
+        viewModelScope.launch(Dispatchers.IO){
+            (repository as Repository.RemoteRepository).unFriend(currentUser, userFriend)
+        }
+    }
+
+
 }
 
 @Suppress("UNCHECKED_CAST")

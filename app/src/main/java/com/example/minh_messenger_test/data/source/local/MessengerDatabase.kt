@@ -11,20 +11,4 @@ import com.example.minh_messenger_test.data.model.Account
 abstract class MessengerDatabase: RoomDatabase() {
     abstract fun getAccountDao(): AccountDao
 
-//    companion object{
-//        @Volatile
-//        private var instance: MessengerDatabase? = null
-//
-//        fun getDatabase(context: Context): MessengerDatabase{
-//            return instance ?: synchronized(this){
-//                val db = Room.databaseBuilder(
-//                    context.applicationContext,
-//                    MessengerDatabase::class.java,
-//                    "messenger_db"
-//                ).fallbackToDestructiveMigrationFrom()
-//                    .build()
-//                db
-//            }
-//        }
-//    }
 }

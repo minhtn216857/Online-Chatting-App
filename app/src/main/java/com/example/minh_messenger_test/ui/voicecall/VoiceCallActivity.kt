@@ -59,6 +59,8 @@ class VoiceCallActivity : AppCompatActivity() {
                 switchCameraButton.isVisible = false
                 screenShareButton.isVisible = false
             }
+            MainService.localSurfaceView = localView
+            MainService.remoteSurfaceView = remoteView
             serviceRepository.setupViews(isVideoCall, isCaller, target)
         }
 

@@ -74,6 +74,14 @@ class AccountAdapter(
         holder.bind(friend, message)
     }
 
+    fun getAccountAt(position: Int): Account{
+        return accounts[position]
+    }
+
+    fun removeAccountAt(position: Int){
+        accounts.removeAt(position)
+        notifyItemRemoved(position)
+    }
 
     fun updateAccounts(accounts: List<Account>){
         val oldSize = this.accounts.size

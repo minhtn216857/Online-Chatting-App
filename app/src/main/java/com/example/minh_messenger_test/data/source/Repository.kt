@@ -15,6 +15,10 @@ interface Repository {
         // Hàm updateAccount để cập nhật tài khoản, trả về boolean kết quả
         suspend fun updateAccount(account: Account): Boolean
 
+        suspend fun addFriend(username: String, userNameFriend: String): String
+
+        suspend fun unFriend(username: String, userNameFriend: String): String
+
         suspend fun loadFriendAccounts(username: String): List<Account>?
 
         suspend fun sendMessage(message: Mesagge): Boolean

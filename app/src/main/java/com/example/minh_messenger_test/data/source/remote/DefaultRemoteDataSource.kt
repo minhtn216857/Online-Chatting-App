@@ -36,6 +36,47 @@ class DefaultRemoteDataSource @Inject constructor(): DataSource.RemoteDataSource
         }
     }
 
+    override suspend fun addFriend(username: String, userNameFriend: String): String {
+        val baseUrl = "https://addfriend-pxgdcdndsa-uc.a.run.app"
+        val retrofit = createRetrofitService(baseUrl).create(MessageService::class.java)
+        val result = retrofit.addFriend(username, userNameFriend)
+        return if(result.isSuccessful){
+            val responseObj = result.body()
+            if(responseObj != null){
+                if(responseObj.success){
+                    "Thêm bạn thành công"
+                }else{
+                    responseObj.error!!
+                }
+            }else{
+                "Tài khoản không tồn tại hoặc đã thêm"
+            }
+        }else{
+            result.body()?.error!!
+        }
+    }
+
+    override suspend fun unFriend(username: String, userNameFriend: String): String {
+        val baseUrl = "https://unfriend-pxgdcdndsa-uc.a.run.app"
+        val retrofit = createRetrofitService(baseUrl).create(MessageService::class.java)
+        val result = retrofit.unFriend(username, userNameFriend)
+        return if(result.isSuccessful){
+            val responseObj = result.body()
+            if(responseObj != null){
+                if(responseObj.success){
+                    "Hủy kết bạn thành công"
+                }else{
+                    responseObj.error!!
+                }
+            }else{
+                "null"
+            }
+        }else{
+            result.body()?.error!!
+        }
+    }
+
+
     // Hàm updateAccount để cập nhật thông tin tài khoản, trả về boolean
     override suspend fun updateAccount(account: Account): Boolean {
         // URL cơ sở cho dịch vụ cập nhật tài khoản
@@ -105,6 +146,8 @@ class DefaultRemoteDataSource @Inject constructor(): DataSource.RemoteDataSource
         }
         return false
     }
+
+
 
 
 }

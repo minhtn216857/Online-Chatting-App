@@ -20,6 +20,14 @@ class DefaultRepository @Inject constructor(
         return remoteDataSource.updateAccount(account)
     }
 
+    override suspend fun addFriend(username: String, userNameFriend: String): String {
+        return remoteDataSource.addFriend(username, userNameFriend)
+    }
+
+    override suspend fun unFriend(username: String, userNameFriend: String): String {
+        return remoteDataSource.addFriend(username, userNameFriend)
+    }
+
     override suspend fun loadFriendAccounts(username: String): List<Account>? {
         return remoteDataSource.loadFriendAccounts(username)
     }

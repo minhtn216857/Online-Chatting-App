@@ -15,6 +15,7 @@ import com.example.minh_messenger_test.utils.DataModel
 import com.example.minh_messenger_test.utils.DataModelType
 import com.example.minh_messenger_test.utils.isValid
 import dagger.hilt.android.AndroidEntryPoint
+import org.webrtc.SurfaceViewRenderer
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -23,33 +24,29 @@ class MainService : Service(), MainRepository.Listener {
     private val TAG = "MainService"
     private var isServiceRunning = false
     private lateinit var notificationManager: NotificationManager
-
-    @Inject lateinit var mainRepository: MainRepository // ✅ Hilt sẽ inject
+    @Inject lateinit var mainRepository: MainRepository
 
     companion object {
         var listener: Listener? = null
+        var localSurfaceView: SurfaceViewRenderer? = null
+        var remoteSurfaceView: SurfaceViewRenderer? = null
+
     }
 
     override fun onCreate() {
         super.onCreate()
-
         notificationManager = getSystemService(
             NotificationManager::class.java)
-
-        Log.d(TAG, "MainRepository injected thành công: $mainRepository")
 
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.d(TAG, "onStartCommand called")
-
         val username = intent?.getStringExtra("username")
-
-        // 🔥 Đăng ký lại Firebase khi Service restart
-
+        mainRepository.setUsername(username!!)
         intent?.let { incomingIntent ->
             when (incomingIntent.action) {
-                MainServiceActions.START_SERVICE.name -> handleStartService(username!!)
+                MainServiceActions.START_SERVICE.name -> handleStartService(username)
                 MainServiceActions.SETUP_VIEWS.name -> handleSetupViews(incomingIntent)
                 MainServiceActions.END_CALL.name -> handleEndCall()
             }
@@ -64,6 +61,8 @@ class MainService : Service(), MainRepository.Listener {
         mainRepository.setTarget(target)
         //initialize our widgets and start streaming our video and audio source
         //and get prepared for call
+        mainRepository.initLocalSurfaceView(localSurfaceView!!, isVideoCall)
+        mainRepository.initRemoteSurfaceView(remoteSurfaceView!!)
 
         if(!isCaller){
             mainRepository.startCall()
@@ -75,11 +74,12 @@ class MainService : Service(), MainRepository.Listener {
         if (!isServiceRunning) {
             isServiceRunning = true
             startServiceWithNotifications()
-            Log.d(TAG, "MainService is running and initFirebase is called") // 🔥 Debug log
+            Log.d(TAG, "MainService is running and initFirebase is called")
 
             //setup
             mainRepository.listener = this
             mainRepository.initFirebase(username)
+            mainRepository.initWebRTCClient(username)
         }
     }
 
@@ -117,6 +117,10 @@ class MainService : Service(), MainRepository.Listener {
                 else -> Unit
             }
         }
+    }
+
+    override fun endCall() {
+        TODO("Not yet implemented")
     }
 
     interface Listener{

@@ -10,7 +10,11 @@ interface DataSource {
         suspend fun login(account: Account): Account?
 
         suspend fun sendMessage(message: Mesagge): Boolean
-        abstract suspend fun loadFriendAccounts(username: String): List<Account>?
+
+        suspend fun addFriend(username: String, userNameFriend: String): String
+        suspend fun unFriend(username: String, userNameFriend: String): String
+
+        suspend fun loadFriendAccounts(username: String): List<Account>?
 
         suspend fun getChat(sender: String, receiver: String): List<Mesagge>
     }
