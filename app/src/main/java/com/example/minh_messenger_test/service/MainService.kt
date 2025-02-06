@@ -25,12 +25,13 @@ class MainService : Service(), MainRepository.Listener {
     private var isServiceRunning = false
     private lateinit var notificationManager: NotificationManager
     @Inject lateinit var mainRepository: MainRepository
+    private var username: String? = null
 
     companion object {
         var listener: Listener? = null
         var localSurfaceView: SurfaceViewRenderer? = null
         var remoteSurfaceView: SurfaceViewRenderer? = null
-
+        var endCallListener: EndCallListener? = null
     }
 
     override fun onCreate() {
@@ -41,50 +42,73 @@ class MainService : Service(), MainRepository.Listener {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        Log.d(TAG, "onStartCommand called")
-        val username = intent?.getStringExtra("username")
-        mainRepository.setUsername(username!!)
         intent?.let { incomingIntent ->
             when (incomingIntent.action) {
-                MainServiceActions.START_SERVICE.name -> handleStartService(username)
+                MainServiceActions.START_SERVICE.name -> handleStartService(incomingIntent)
                 MainServiceActions.SETUP_VIEWS.name -> handleSetupViews(incomingIntent)
                 MainServiceActions.END_CALL.name -> handleEndCall()
+                MainServiceActions.SWITCH_CAMERA.name -> handleSwitchCamera()
+                MainServiceActions.TOGGLE_MICROPHONE.name -> handleToggleMicrophone(incomingIntent)
+                MainServiceActions.TOGGLE_CAMERA.name -> handleToggleCamera(incomingIntent)
             }
         }
         return START_STICKY
+    }
+
+    private fun handleToggleCamera(incomingIntent: Intent) {
+        val shouldBeMuted = incomingIntent.getBooleanExtra("shouldBeMuted", true)
+        mainRepository.toggleVideo(shouldBeMuted)
+    }
+
+    private fun handleToggleMicrophone(incomingIntent: Intent) {
+        val shouldBeMuted = incomingIntent.getBooleanExtra("shouldBeMuted", true)
+        mainRepository.toggleAudio(shouldBeMuted)
+    }
+
+    private fun handleSwitchCamera() {
+        mainRepository.switchCamera()
     }
 
     private fun handleSetupViews(incomingIntent: Intent){
         val isCaller = incomingIntent.getBooleanExtra("isCaller", false)
         val target = incomingIntent.getStringExtra("target")
         val isVideoCall = incomingIntent.getBooleanExtra("isVideoCall", true)
+
+        Log.d("WebRTC1", "📞 handleSetupViews: isCaller=$isCaller, target=$target, isVideoCall=$isVideoCall")
+
         mainRepository.setTarget(target)
-        //initialize our widgets and start streaming our video and audio source
-        //and get prepared for call
+
         mainRepository.initLocalSurfaceView(localSurfaceView!!, isVideoCall)
         mainRepository.initRemoteSurfaceView(remoteSurfaceView!!)
-
-        if(!isCaller){
+        if (!isCaller) {
             mainRepository.startCall()
         }
     }
 
 
-    private fun handleStartService(username: String) {
+
+    private fun handleStartService(incomingIntent: Intent) {
+        username = incomingIntent.getStringExtra("username")
         if (!isServiceRunning) {
             isServiceRunning = true
             startServiceWithNotifications()
-            Log.d(TAG, "MainService is running and initFirebase is called")
-
             //setup
             mainRepository.listener = this
-            mainRepository.initFirebase(username)
-            mainRepository.initWebRTCClient(username)
+            Log.d(TAG, "${username}")
+            mainRepository.initFirebase(username!!)
+            mainRepository.initWebRTCClient(username!!)
         }
     }
 
     private fun handleEndCall() {
-        Log.d(TAG, "Ending call...")
+        mainRepository.sendEndCall()
+        endCallAndRestartRepository()
+    }
+
+    private fun endCallAndRestartRepository(){
+        mainRepository.endCall()
+        endCallListener?.onCallEnded()
+        mainRepository.initWebRTCClient(username!!)
     }
 
     private fun startServiceWithNotifications() {
@@ -120,10 +144,14 @@ class MainService : Service(), MainRepository.Listener {
     }
 
     override fun endCall() {
-        TODO("Not yet implemented")
+        endCallAndRestartRepository()
     }
 
     interface Listener{
         fun onCallReceived(model: DataModel)
+    }
+
+    interface EndCallListener{
+        fun onCallEnded()
     }
 }

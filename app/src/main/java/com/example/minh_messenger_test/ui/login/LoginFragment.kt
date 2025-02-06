@@ -26,6 +26,7 @@ import com.example.minh_messenger_test.utils.MessengerUtils.afterTextChanged
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+import kotlin.math.min
 
 @AndroidEntryPoint
 class LoginFragment : Fragment() {
@@ -34,7 +35,6 @@ class LoginFragment : Fragment() {
     private lateinit var navController: NavController
     private lateinit var savedStateHandle: SavedStateHandle
     private var isButtonLoginClicked = false
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {

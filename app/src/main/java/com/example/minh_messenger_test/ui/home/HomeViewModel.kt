@@ -1,5 +1,6 @@
 package com.example.minh_messenger_test.ui.home
 
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -21,6 +22,9 @@ class HomeViewModel @Inject constructor(
     private val _friendAccounts = MutableLiveData<List<Account>>()
     val friendAccounts: LiveData<List<Account>> = _friendAccounts
 
+    private val _addFriend = MutableLiveData<String>()
+    val addFriend: LiveData<String> = _addFriend
+
     fun loadFriendAccounts(username: String) {
         viewModelScope.launch(Dispatchers.IO) {
             val result = (repository as Repository.RemoteRepository).loadFriendAccounts(username)!!
@@ -30,8 +34,10 @@ class HomeViewModel @Inject constructor(
 
     fun addFriend(username: String, usernameFriend: String){
         viewModelScope.launch(Dispatchers.IO) {
-            (repository as Repository.RemoteRepository).addFriend(username, usernameFriend)
+            val result = (repository as Repository.RemoteRepository).addFriend(username, usernameFriend)
+            _addFriend.postValue(result)
         }
+
     }
 
     fun unFriend(currentUser: String, userFriend: String) {

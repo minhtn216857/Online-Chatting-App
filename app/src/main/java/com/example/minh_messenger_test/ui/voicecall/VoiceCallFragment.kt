@@ -29,10 +29,9 @@ class VoiceCallFragment : Fragment() {
     private lateinit var binding: FragmentVoiceCallBinding
     private lateinit var videoCallViewModel: VideoCallViewModel
     private lateinit var videoCallAdapter: VideoCallAdapter
-//    private lateinit var loginViewModel: LoginViewModel
     @Inject lateinit var mainRepository: MainRepository
 
-    private val username = LoginViewModel.currentAccount.value!!.username
+    private var username: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,9 +46,23 @@ class VoiceCallFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.d("VoiceCallFragment", "onViewCreated called")
-        setupViewModel()
-        setupRecycler()
+
+        // Lấy instance của ViewModel
+        val repository = (requireActivity().application as MessengerApplication).repository
+        val loginViewModel = ViewModelProvider(requireActivity(), LoginViewModelFactory(repository))[LoginViewModel::class.java]
+
+        // Lắng nghe cập nhật từ LoginViewModel
+        loginViewModel.loggedInAccount.observe(viewLifecycleOwner) { account ->
+            if (account != null) {
+                username = account.username
+                Log.d("VoiceCallFragment", "Username updated: $username")
+                setupRecycler()
+                setupViewModel()
+            } else {
+                Log.e("VoiceCallFragment", "❌ Username is null! Không thể tiếp tục")
+
+            }
+        }
 
 
     }
@@ -60,7 +73,7 @@ class VoiceCallFragment : Fragment() {
                 Log.d("TARGET", "$target")
                 (activity as AppCompatActivity).getCameraAndMicPermission {
                     mainRepository.sendConnectionRequest(
-                        sender = username,
+                        sender = username!!,
                         target,
                         true){
                         if(it){
@@ -69,8 +82,8 @@ class VoiceCallFragment : Fragment() {
                             startActivity(Intent(requireActivity(),
                                 VoiceCallActivity::class.java).apply {
                                     putExtra("target", target)
-                                putExtra("isVideoCall", true)
-                                putExtra("isCaller", true)
+                                    putExtra("isVideoCall", true)
+                                    putExtra("isCaller", true)
                             })
 
                         }
@@ -80,9 +93,11 @@ class VoiceCallFragment : Fragment() {
 
             override fun onAudioCallClicked(target: String) {
                 (activity as AppCompatActivity).getCameraAndMicPermission {
-                    mainRepository.sendConnectionRequest(username, target, false){
+                    mainRepository.sendConnectionRequest(
+                        sender = username!!,
+                        target,
+                        false){
                         if(it){
-
                             //we have to start video call
                             //we wanna create an intent to move to call activity
                             startActivity(Intent(requireContext(),
@@ -111,7 +126,7 @@ class VoiceCallFragment : Fragment() {
             VideoCallViewModelFactory(repository, databaseRef))[VideoCallViewModel::class.java]
 
 
-        videoCallViewModel.loadFriendWithStatus(username)
+        videoCallViewModel.loadFriendWithStatus(username!!)
         videoCallViewModel.friendsAccWithStatus.observe(viewLifecycleOwner){
             Log.d("MainActivity", "subscribeObservers: $it")
             videoCallAdapter.updateStatus(it)

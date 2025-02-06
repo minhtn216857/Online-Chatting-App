@@ -61,6 +61,18 @@ class AddFriendFragment : Fragment() {
             requireActivity(),
             HomeViewModelFactory(repository)
         )[HomeViewModel::class.java]
+
+        homeViewModel.addFriend.observe(viewLifecycleOwner){
+            if(it == "success"){
+                Toast.makeText(
+                    requireActivity(), "Kết bạn thành công ",
+                    Toast.LENGTH_SHORT).show()
+            }else{
+                Toast.makeText(
+                    requireActivity(), "Tài khoản đã là bạn hoặc không tồn tại!",
+                    Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
 }

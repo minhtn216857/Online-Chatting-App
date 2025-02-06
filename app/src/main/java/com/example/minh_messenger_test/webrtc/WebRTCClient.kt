@@ -1,6 +1,7 @@
 package com.example.minh_messenger_test.webrtc
 
 import android.content.Context
+import android.util.Log
 import com.example.minh_messenger_test.utils.DataModel
 import com.example.minh_messenger_test.utils.DataModelType
 import com.google.gson.Gson
@@ -22,24 +23,38 @@ class WebRTCClient @Inject constructor(
     private val eglBaseContext = EglBase.create().eglBaseContext  // Tạo EGL context để render video WebRTC
     private val peerConnectionFactory by lazy { createPeerConnectionFactory() }  // Factory tạo các PeerConnection
     private var peerConnection: PeerConnection? = null  // Đối tượng PeerConnection để quản lý kết nối
-    private val videoCapturer = getVideoCapturer(context)
-    private val mediaContraint = MediaConstraints().apply {
-        mandatory.add(MediaConstraints.KeyValuePair("OfferToReceiveVideo", "true"))
-        mandatory.add(MediaConstraints.KeyValuePair("OfferToReceiveAudio", "true"))
-    }
 
-    // Cấu hình TURN server để hỗ trợ kết nối ngang hàng (P2P) khi NAT traversal gặp khó khăn
     private val iceServer = listOf(
-        PeerConnection.IceServer.builder("turn:a.relay.metered.ca:443?transport=tcp")
-            .setUsername("83eebabf8b4cce9d5dbcb649")
-            .setPassword("2D7JvfkOQtBdYW3R")
+        PeerConnection.IceServer.builder("stun:ss-turn2.xirsys.com").createIceServer(),
+        PeerConnection.IceServer.builder("turn:ss-turn2.xirsys.com:80?transport=udp")
+            .setUsername("YfuG9ImT3ARNhhbVfIzOGOz_qIFtomA-x-8dLJ6ZSs8zElI8dhvLkvHRfaG1jGAIAAAAAGeiEqBtaW5oMzU1MjU=")
+            .setPassword("ea7b3e6a-e2f9-11ef-aa87-0242ac140004")
+            .createIceServer(),
+        PeerConnection.IceServer.builder("turn:ss-turn2.xirsys.com:3478?transport=udp")
+            .setUsername("YfuG9ImT3ARNhhbVfIzOGOz_qIFtomA-x-8dLJ6ZSs8zElI8dhvLkvHRfaG1jGAIAAAAAGeiEqBtaW5oMzU1MjU=")
+            .setPassword("ea7b3e6a-e2f9-11ef-aa87-0242ac140004")
+            .createIceServer(),
+        PeerConnection.IceServer.builder("turns:ss-turn2.xirsys.com:443?transport=tcp")
+            .setUsername("YfuG9ImT3ARNhhbVfIzOGOz_qIFtomA-x-8dLJ6ZSs8zElI8dhvLkvHRfaG1jGAIAAAAAGeiEqBtaW5oMzU1MjU=")
+            .setPassword("ea7b3e6a-e2f9-11ef-aa87-0242ac140004")
+            .createIceServer(),
+        PeerConnection.IceServer.builder("turns:ss-turn2.xirsys.com:5349?transport=tcp")
+            .setUsername("YfuG9ImT3ARNhhbVfIzOGOz_qIFtomA-x-8dLJ6ZSs8zElI8dhvLkvHRfaG1jGAIAAAAAGeiEqBtaW5oMzU1MjU=")
+            .setPassword("ea7b3e6a-e2f9-11ef-aa87-0242ac140004")
             .createIceServer()
     )
+
     // Hỗ trợ xử lý texture từ video.
     private var surfaceTextureHelper: SurfaceTextureHelper? = null
 
     private val localAudioSource by lazy { peerConnectionFactory.createAudioSource(MediaConstraints()) } // Tạo nguồn âm thanh
     private val localVideoSource by lazy { peerConnectionFactory.createVideoSource(false) } // Tạo nguồn video (false = không bật mặc định)
+
+    private val videoCapturer = getVideoCapturer(context)
+    private val mediaContraint = MediaConstraints().apply {
+        mandatory.add(MediaConstraints.KeyValuePair("OfferToReceiveVideo", "true"))  // Yêu cầu nhận video.
+        mandatory.add(MediaConstraints.KeyValuePair("OfferToReceiveAudio", "true"))
+    }
 
     // Call variables
     private lateinit var localSurfaceView: SurfaceViewRenderer  // View hiển thị video cục bộ (local)
@@ -49,8 +64,6 @@ class WebRTCClient @Inject constructor(
     private var localStreamId = ""                              // ID cho stream cục bộ
     private var localAudioTrack: AudioTrack? = null             // Track âm thanh cục bộ
     private var localVideoTrack: VideoTrack? = null             // Track video cục bộ
-
-
 
     // Initializing WebRTC dependencies
     init {
@@ -83,38 +96,48 @@ class WebRTCClient @Inject constructor(
     /**
      * Khởi tạo WebRTC Client với tên người dùng và Observer để lắng nghe sự kiện từ PeerConnection
      */
-    fun initializeWebrtcClient(
-        username: String, observer: PeerConnection.Observer
-    ) {
+    fun initializeWebrtcClient(username: String, observer: PeerConnection.Observer) {
         this.username = username
+        localTrackId = "${username}_track"
+        localStreamId = "${username}_stream"
         peerConnection = createPeerConnection(observer)
+
+        // Kiểm tra danh sách ràng buộc (constraints)
+        Log.d("WebRTC1", "🔧 Media Constraints: ${mediaContraint.mandatory}")
     }
+
+
 
     /**
      * Tạo kết nối PeerConnection với cấu hình ICE Server và Observer
      */
     private fun createPeerConnection(observer: PeerConnection.Observer): PeerConnection? {
+        Log.d("WebRTC1", "🛠️ Đang tạo PeerConnection với observer: $observer")
         return peerConnectionFactory.createPeerConnection(iceServer, observer)
     }
 
-    // negotiate section
 
     fun call(target: String){
+        Log.d("WebRTC1", "📞 Bắt đầu gửi Offer đến $target")
+
         peerConnection?.createOffer(object : MySdpObserver() {
             override fun onCreateSuccess(desc: SessionDescription?) {
                 super.onCreateSuccess(desc)
+                Log.d("WebRTC1", "✅ Offer được tạo: ${desc?.description}")
                 peerConnection?.setLocalDescription(object : MySdpObserver() {
                     override fun onSetSuccess() {
                         super.onSetSuccess()
+                        Log.d("WebRTC1", "📡 Đã đặt Local Description")
                         listener?.onTransferEventToSocket(
                             DataModel(type = DataModelType.Offer,
-                            sender = username,
-                            target = target,
-                            data = desc?.description)
+                                sender = username,
+                                target = target,
+                                data = desc?.description)
                         )
                     }
                 }, desc)
             }
+
         }, mediaContraint)
     }
 
@@ -193,10 +216,6 @@ class WebRTCClient @Inject constructor(
 
 
 
-
-
-
-
     // ----- Streaming Section -----
     /**
      * Khởi tạo SurfaceView để hiển thị video (cục bộ hoặc từ xa)
@@ -227,20 +246,23 @@ class WebRTCClient @Inject constructor(
         localStream = peerConnectionFactory.createLocalMediaStream(localStreamId)
 
         if (isVideoCall) {
-            startCapturingCamera(localView)  // Bắt đầu quay camera nếu là cuộc gọi video
+            startCapturingCamera(localView)
         }
 
-        // Tạo track âm thanh cục bộ và thêm vào stream
         localAudioTrack = peerConnectionFactory.createAudioTrack(localTrackId + "_audio", localAudioSource)
         localStream?.addTrack(localAudioTrack)
 
-        // Thêm stream cục bộ vào PeerConnection để gửi dữ liệu đến peer khác
+        Log.d("WebRTC1", "Đang thêm Local Stream vào PeerConnection...")
         peerConnection?.addStream(localStream)
+
     }
+
     /**
      * Bắt đầu quay video từ camera
      */
     private fun startCapturingCamera(localView: SurfaceViewRenderer) {
+        Log.d("WebRTC1", "🎥 Bắt đầu quay video từ Camera...")
+
         surfaceTextureHelper = SurfaceTextureHelper.create(
             Thread.currentThread().name, eglBaseContext
         )
@@ -257,6 +279,7 @@ class WebRTCClient @Inject constructor(
         localVideoTrack?.addSink(localView)
         localStream?.addTrack(localVideoTrack)
     }
+
     private fun getVideoCapturer(context: Context): CameraVideoCapturer =
         Camera2Enumerator(context).run{
             deviceNames.find{
@@ -275,8 +298,6 @@ class WebRTCClient @Inject constructor(
         localStream?.removeTrack(localAudioTrack)
         localVideoTrack?.dispose()
     }
-
-
 
 
 

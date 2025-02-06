@@ -16,6 +16,12 @@
         <action
             android:id="@+id/action_home_fragment_to_login_fragment"
             app:destination="@id/login_fragment" />
+        <action
+            android:id="@+id/action_home_fragment_to_profileFragment"
+            app:destination="@id/profile_fragment" />
+        <action
+            android:id="@+id/action_home_fragment_to_addFriendFragment"
+            app:destination="@id/addFriend_Fragment" />
     </fragment>
     <fragment
         android:id="@+id/login_fragment"
@@ -49,4 +55,13 @@
         android:id="@+id/action_global_home_fragment"
         app:destination="@id/home_fragment"
         app:popUpTo="@id/home_fragment" />
+    <fragment
+        android:id="@+id/profile_fragment"
+        android:name="com.example.minh_messenger_test.ui.profile.ProfileFragment"
+        android:label="Thông tin cá nhân" />
+    <fragment
+        android:id="@+id/addFriend_Fragment"
+        android:name="com.example.minh_messenger_test.ui.updateFriend.AddFriendFragment"
+        android:label="Thêm bạn bè"
+        tools:layout="@layout/fragment_add_friend" />
 </navigation>

@@ -1,5 +1,6 @@
 package com.example.minh_messenger_test.data.source.remote
 
+import android.util.Log
 import com.example.minh_messenger_test.data.model.Account
 import com.example.minh_messenger_test.data.model.Mesagge
 import com.example.minh_messenger_test.data.source.DataSource
@@ -37,24 +38,27 @@ class DefaultRemoteDataSource @Inject constructor(): DataSource.RemoteDataSource
     }
 
     override suspend fun addFriend(username: String, userNameFriend: String): String {
-        val baseUrl = "https://addfriend-pxgdcdndsa-uc.a.run.app"
-        val retrofit = createRetrofitService(baseUrl).create(MessageService::class.java)
-        val result = retrofit.addFriend(username, userNameFriend)
-        return if(result.isSuccessful){
-            val responseObj = result.body()
-            if(responseObj != null){
-                if(responseObj.success){
-                    "Thêm bạn thành công"
-                }else{
-                    responseObj.error!!
+        return try {
+            val baseUrl = "https://addfriend-pxgdcdndsa-uc.a.run.app"
+            val retrofit = createRetrofitService(baseUrl).create(MessageService::class.java)
+            val result = retrofit.addFriend(username, userNameFriend)
+
+            if (result.isSuccessful) {
+                val responseObj = result.body()
+                return when {
+                    responseObj == null -> "null"
+                    responseObj.success -> "success"
+                    else -> responseObj.error ?: "null"
                 }
-            }else{
-                "Tài khoản không tồn tại hoặc đã thêm"
+            } else {
+                "null"
             }
-        }else{
-            result.body()?.error!!
+        } catch (e: Exception) {
+            "null"
         }
     }
+
+
 
     override suspend fun unFriend(username: String, userNameFriend: String): String {
         val baseUrl = "https://unfriend-pxgdcdndsa-uc.a.run.app"
@@ -77,17 +81,40 @@ class DefaultRemoteDataSource @Inject constructor(): DataSource.RemoteDataSource
     }
 
 
-    // Hàm updateAccount để cập nhật thông tin tài khoản, trả về boolean
+//    // Hàm updateAccount để cập nhật thông tin tài khoản, trả về boolean
+//    override suspend fun updateAccount(account: Account): Boolean {
+//        // URL cơ sở cho dịch vụ cập nhật tài khoản
+//        val baseUrl = "https://updateaccount-pxgdcdndsa-uc.a.run.app"
+//        // Tạo retrofit service từ URL cơ sở
+//        val retrofit = createRetrofitService(baseUrl).create(MessageService::class.java)
+//        // Gọi phương thức updateAccount từ MessageService
+//        val result = retrofit.updateAccount(account)
+//        // Trả về kết quả yêu cầu (thành công hay không)
+//        return result.isSuccessful
+//    }
+
     override suspend fun updateAccount(account: Account): Boolean {
-        // URL cơ sở cho dịch vụ cập nhật tài khoản
         val baseUrl = "https://updateaccount-pxgdcdndsa-uc.a.run.app"
-        // Tạo retrofit service từ URL cơ sở
         val retrofit = createRetrofitService(baseUrl).create(MessageService::class.java)
-        // Gọi phương thức updateAccount từ MessageService
+
+        Log.d("API_UPDATE", "📤 Gửi request updateAccount: $account")
+
         val result = retrofit.updateAccount(account)
-        // Trả về kết quả yêu cầu (thành công hay không)
-        return result.isSuccessful
+
+        // Log chi tiết response từ server
+        Log.d("API_UPDATE", "📥 Kết quả trả về từ server: ${result.code()} - ${result.message()}")
+
+        if (result.isSuccessful) {
+            val responseBody = result.body()
+            Log.d("API_UPDATE", "📥 Response body: $responseBody")
+            return responseBody?.success ?: false
+        } else {
+            val errorBody = result.errorBody()?.string()
+            Log.e("API_UPDATE", "❌ Lỗi API: ${result.code()} - $errorBody")
+            return false
+        }
     }
+
 
     override suspend fun getChat(sender: String, receiver: String): List<Mesagge> {
         val baseUrl = "https://getchat-pxgdcdndsa-uc.a.run.app"

@@ -52,6 +52,7 @@ class LoginViewModel @Inject constructor(
     fun updateAccount(account: Account){
         viewModelScope.launch(Dispatchers.IO){
             val result = (repository as Repository.RemoteRepository).updateAccount(account)
+            Log.d("ProfileFragment", "${result}")
             if(result){
                 (repository as Repository.LocalRepository).updateLocalAccount(account)
                 _loggedInAccount.postValue(account)
@@ -113,8 +114,6 @@ class LoginViewModel @Inject constructor(
             updateCurrentAccount(result)
         }
     }
-
-
 
     fun updateLoginState(state: LoginState?) {
         if(state == null){

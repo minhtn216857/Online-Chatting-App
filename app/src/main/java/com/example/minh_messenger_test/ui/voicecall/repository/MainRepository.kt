@@ -1,8 +1,6 @@
 package com.example.minh_messenger_test.ui.voicecall.repository
 
 import android.util.Log
-import android.view.SurfaceView
-import com.example.minh_messenger_test.data.model.Account
 import com.example.minh_messenger_test.data.model.AccountStatus
 import com.example.minh_messenger_test.ui.voicecall.firebaseClient.FirebaseClient
 import com.example.minh_messenger_test.utils.DataModel
@@ -23,13 +21,18 @@ class MainRepository @Inject constructor(
     private val gson: Gson,
     private val webRTCClient: WebRTCClient,
     private val firebaseClient: FirebaseClient
-):WebRTCClient.Listener {
+): WebRTCClient.Listener {
     var listener: Listener? = null
     private var target: String? = null
     private var username: String? = null
     private var remoteView: SurfaceViewRenderer? = null
 
+    private fun setUsername(username: String){
+        this.username = username
+    }
+
     fun initFirebase(username: String){
+        setUsername(username)
         Log.d("MainRepository", "initFirebase() called") // 🔥 Debug log
         firebaseClient.subscribeForLatestEvent(username, object : FirebaseClient.Listener {
             override fun onLatestEventReceived(event: DataModel) {
@@ -86,45 +89,56 @@ class MainRepository @Inject constructor(
         this.target = target
     }
 
-    fun setUsername(username: String){
-        this.username = username
-    }
-
     fun initWebRTCClient(username: String){
         webRTCClient.listener = this
         webRTCClient.initializeWebrtcClient(username, object : MyPeerObserver() {
-            override fun onAddStream(p0: MediaStream?) {
-                super.onAddStream(p0)
+            override fun onAddStream(mediaStream: MediaStream?) {
+                super.onAddStream(mediaStream)
                 try {
-                    p0?.videoTracks?.get(0)?.addSink(remoteView)
-                }catch (e: Exception){
-                    e.printStackTrace()
+                    if (mediaStream?.videoTracks?.isNotEmpty() == true) {
+                        Log.d("WebRTC1", "✅ Nhận Video Stream từ Remote")
+                        mediaStream.videoTracks.get(0)?.addSink(remoteView)
+                    } else {
+                        Log.e("WebRTC1", "❌ Không có Video Stream từ Remote!")
+                    }
+                } catch (e: Exception) {
+                    Log.e("WebRTC1", "Lỗi trong onAddStream: ${e.message}")
                 }
             }
 
             override fun onIceCandidate(p0: IceCandidate?) {
                 super.onIceCandidate(p0)
-                p0?.let{
-                    webRTCClient.sendIceCandidate(target!!, it)
+                if (p0 != null) {
+                    Log.d("WebRTC1", "📡 Gửi ICE Candidate: $p0")
+                    webRTCClient.sendIceCandidate(target!!, p0)
+                } else {
+                    Log.e("WebRTC1", "❌ ICE Candidate bị null!")
                 }
             }
+
 
             override fun onConnectionChange(newState: PeerConnection.PeerConnectionState?) {
-                super.onConnectionChange(newState)
-                if(newState == PeerConnection.PeerConnectionState.CONNECTED){
-                    //1. change my status to IN_CALL
+                Log.d("WebRTC1", "📶 ICE Connection State: $newState")
+                if (newState == PeerConnection.PeerConnectionState.CONNECTED) {
+                    Log.d("WebRTC1", "✅ Kết nối thành công!")
                     changeMyStatus(username, AccountStatus.IN_CALL)
-
-                    //2. clear latest event inside my user section in firebase database
                     firebaseClient.clearLatestEvent(username)
+                } else if (newState == PeerConnection.PeerConnectionState.FAILED) {
+                    Log.e("WebRTC1", "❌ Kết nối thất bại!")
                 }
             }
+
         })
     }
 
-    private fun changeMyStatus(username: String, status: AccountStatus) {
+    fun changeMyStatus(username: String?, status: AccountStatus) {
+        if (username == null) {
+            Log.e("MainRepository", "❌ Lỗi: Username chưa được gán!")
+            return
+        }
         firebaseClient.changeMyStatus(username, status)
     }
+
 
     fun initLocalSurfaceView(view: SurfaceViewRenderer, isVideoCall: Boolean){
         webRTCClient.initLocalSurfaceView(view, isVideoCall)

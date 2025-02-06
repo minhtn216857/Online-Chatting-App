@@ -1,6 +1,5 @@
-package com.example.minh_messenger_test
+package com.example.minh_messenger_test.service
 
-import android.util.Log
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 

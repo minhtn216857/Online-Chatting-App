@@ -62,7 +62,6 @@ class MainActivity : AppCompatActivity(), MainService.Listener {
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var loginViewModel: LoginViewModel
     @Inject lateinit var databaseRef: DatabaseReference
-    @Inject lateinit var mainRepository: MainRepository
     @Inject lateinit var mainServiceRepository: MainServiceRepository
 
     private val requestPermissionLauncher = registerForActivityResult(
@@ -106,6 +105,7 @@ class MainActivity : AppCompatActivity(), MainService.Listener {
     private fun startMyService(username: String) {
 //        val username = LoginViewModel.currentAccount.value!!.username
         Log.d("started", "started")
+
         mainServiceRepository.startService(username)
     }
 
@@ -192,6 +192,8 @@ class MainActivity : AppCompatActivity(), MainService.Listener {
     }
 
     private fun setupViewModel() {
+        MainService.listener = this
+
         val repository = (application as MessengerApplication).repository
         loginViewModel = ViewModelProvider(
             this,
@@ -209,10 +211,7 @@ class MainActivity : AppCompatActivity(), MainService.Listener {
             } else {
                 Log.d("username", "${it.username}")
                 // load thong tin tai khoan da dang nhap tu local
-                MainService.listener = this
-
                 startMyService(it.username)
-
             }
         }
     }
@@ -242,12 +241,12 @@ class MainActivity : AppCompatActivity(), MainService.Listener {
                 true
             }
             if(it.itemId == R.id.item_add_friend){
-                navController.navigate(R.id.add_friend_fragment)
+                navController.navigate(R.id.action_home_fragment_to_addFriendFragment)
                 binding.drawerLayout.closeDrawer(GravityCompat.START)
                 true
             }
             if(it.itemId == R.id.item_profile){
-                navController.navigate(R.id.profile_layout)
+                navController.navigate(R.id.action_home_fragment_to_profileFragment)
                 binding.drawerLayout.closeDrawer(GravityCompat.START)
                 true
             }
@@ -273,26 +272,29 @@ class MainActivity : AppCompatActivity(), MainService.Listener {
 
     @SuppressLint("SetTextI18n")
     override fun onCallReceived(model: DataModel) {
-        binding.includeMain.incomingCallLayout.apply {
-            val isVideoCall = model.type == DataModelType.StartVideoCall
-            val isVideoCallText = if(isVideoCall) "Video" else "Audio"
-            txtIncomingCall.text = "${model.sender} is ${isVideoCallText} Calling you"
-            incomingCallLayout.isVisible = true
-            btnYesCall.setOnClickListener {
-                getCameraAndMicPermission {
-                    incomingCallLayout.isVisible = false
-                    startActivity(
-                        Intent(this@MainActivity,
-                            VoiceCallActivity::class.java).apply {
+        runOnUiThread {
+            binding.includeMain.incomingCallLayout.apply {
+                val isVideoCall = model.type == DataModelType.StartVideoCall
+                val isVideoCallText = if(isVideoCall) "Video" else "Audio"
+                txtIncomingCall.text = "${model.sender} is ${isVideoCallText} Calling you"
+                incomingCallLayout.isVisible = true
+                btnYesCall.setOnClickListener {
+                    getCameraAndMicPermission {
+                        incomingCallLayout.isVisible = false
+                        startActivity(
+                            Intent(this@MainActivity,
+                                VoiceCallActivity::class.java).apply {
                                 putExtra("target", model.sender)
                                 putExtra("isVideoCall",isVideoCall)
                                 putExtra("isCaller", false)
-                    })
+                            })
+                    }
+                }
+                btnNoCall.setOnClickListener {
+                    incomingCallLayout.isVisible = false
                 }
             }
-            btnNoCall.setOnClickListener {
-                incomingCallLayout.isVisible = false
-            }
+
         }
     }
 

@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.minh_messenger_test.data.model.AccountStatus
 import com.example.minh_messenger_test.ui.voicecall.firebaseClient.FirebaseFieldNames.LATEST_EVENT
 import com.example.minh_messenger_test.ui.login.LoginViewModel
+import com.example.minh_messenger_test.ui.voicecall.firebaseClient.FirebaseFieldNames.STATUS
 import com.example.minh_messenger_test.utils.DataModel
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -64,7 +65,7 @@ class FirebaseClient @Inject constructor(
     }
 
     fun changeMyStatus(username: String, status: AccountStatus) {
-        databaseRef.child(username).child(LATEST_EVENT).setValue(status.name)
+        databaseRef.child(username).child(STATUS).setValue(status.name)
     }
 
     fun clearLatestEvent(username: String) {

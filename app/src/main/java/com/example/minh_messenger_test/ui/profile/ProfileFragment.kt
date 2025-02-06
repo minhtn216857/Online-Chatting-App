@@ -3,6 +3,7 @@ package com.example.minh_messenger_test.ui.profile
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -20,8 +21,10 @@ import com.example.minh_messenger_test.ui.home.HomeViewModel
 import com.example.minh_messenger_test.ui.login.LoginViewModel
 import com.example.minh_messenger_test.ui.login.LoginViewModelFactory
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 import kotlin.contracts.contract
 
+@AndroidEntryPoint
 class ProfileFragment : Fragment() {
 
     private lateinit var binding: FragmentProfileBinding
@@ -81,7 +84,12 @@ class ProfileFragment : Fragment() {
             loginViewModel.loggedInAccount.value?.let{currentAccount ->
                 val updatedAccount =
                     currentAccount.copy(displayName = newDisplayName, email = newEmail)
+                Log.d("ProfileFragment", "Updating account: $updatedAccount")
+                Log.d("ProfileFragment", "New display name: ${updatedAccount.displayName}")
+
                 loginViewModel.updateAccount(updatedAccount)
+                loginViewModel.loadLocalAccountInfo(updatedAccount.username)
+
             }
 
             Snackbar.make(binding.root, "Completed", Snackbar.LENGTH_LONG).show()
