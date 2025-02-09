@@ -1,6 +1,5 @@
 package com.example.minh_messenger_test.service
 
-import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
@@ -50,9 +49,15 @@ class MainService : Service(), MainRepository.Listener {
                 MainServiceActions.SWITCH_CAMERA.name -> handleSwitchCamera()
                 MainServiceActions.TOGGLE_MICROPHONE.name -> handleToggleMicrophone(incomingIntent)
                 MainServiceActions.TOGGLE_CAMERA.name -> handleToggleCamera(incomingIntent)
+                MainServiceActions.STOP_SERVICE.name -> handleStopService()
             }
         }
         return START_STICKY
+    }
+
+    private fun handleStopService() {
+        mainRepository.endCall()
+
     }
 
     private fun handleToggleCamera(incomingIntent: Intent) {
@@ -74,7 +79,7 @@ class MainService : Service(), MainRepository.Listener {
         val target = incomingIntent.getStringExtra("target")
         val isVideoCall = incomingIntent.getBooleanExtra("isVideoCall", true)
 
-        Log.d("WebRTC1", "📞 handleSetupViews: isCaller=$isCaller, target=$target, isVideoCall=$isVideoCall")
+        Log.d("WebRTC1", "handleSetupViews: isCaller=$isCaller, target=$target, isVideoCall=$isVideoCall")
 
         mainRepository.setTarget(target)
 
@@ -84,8 +89,6 @@ class MainService : Service(), MainRepository.Listener {
             mainRepository.startCall()
         }
     }
-
-
 
     private fun handleStartService(incomingIntent: Intent) {
         username = incomingIntent.getStringExtra("username")

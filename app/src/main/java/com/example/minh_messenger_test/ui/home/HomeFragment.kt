@@ -49,16 +49,10 @@ class HomeFragment : Fragment(){
         super.onCreate(savedInstanceState)
         requireActivity().title = getString(R.string.title_chat)
         navController = findNavController()
-        // Lấy NavController từ Fragment hoặc Activity
-        navController = findNavController()
-        // Lấy Entry hiện tại từ BackStack của NavController
         val currentBackStackEntry = navController.currentBackStackEntry!!
-        // Lấy SavedStateHandle từ BackStackEntry hiện tại
         val savedStateHandle = currentBackStackEntry.savedStateHandle
-        // Lắng nghe thay đổi trên LiveData chứa trạng thái đăng nhập thành công
         savedStateHandle.getLiveData<Boolean>(LoginFragment.EXTRA_LOGIN_SUCCESS)
             .observe(currentBackStackEntry) {
-                // Nếu đăng nhập không thành công, điều hướng đến LoginFragment
                 if (!it) {
                     navigateToLoginFragment()
                 }
@@ -71,6 +65,13 @@ class HomeFragment : Fragment(){
         setupRecycler()
     }
 
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentHomeBinding.inflate(layoutInflater, container, false)
+        return binding.root
+    }
     private fun setupViewModel() {
         val repository = (requireActivity().application as MessengerApplication).repository
 
@@ -182,14 +183,6 @@ class HomeFragment : Fragment(){
     private fun navigateToLoginFragment() {
         val action = HomeFragmentDirections.actionHomeFragmentToLoginFragment()
         navController.navigate(action)
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = FragmentHomeBinding.inflate(layoutInflater, container, false)
-        return binding.root
     }
 
 }

@@ -4,9 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.util.Log
-import com.example.minh_messenger_test.ui.voicecall.VoiceCallActivity
-import com.example.minh_messenger_test.ui.voicecall.repository.MainRepository
-import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -33,9 +30,9 @@ class MainServiceRepository @Inject constructor(
         val intent = Intent(context, MainService::class.java)
         intent.apply {
             action = MainServiceActions.END_CALL.name
-            startServiceIntent(intent)
-
         }
+        startServiceIntent(intent)
+
     }
 
     fun setupViews(videoCall: Boolean, caller: Boolean, target: String?) {
@@ -55,7 +52,6 @@ class MainServiceRepository @Inject constructor(
         }else{
             context.startService(intent)
         }
-
     }
 
     fun switchCamera() {
@@ -84,4 +80,6 @@ class MainServiceRepository @Inject constructor(
         }
         startServiceIntent(intent)
     }
+
+
 }

@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
@@ -55,7 +56,6 @@ class LoginFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupViewModel()
         setupListener()
-
     }
 
     private fun setupListener() {
@@ -96,7 +96,6 @@ class LoginFragment : Fragment() {
             LoginViewModelFactory(repository)
         )[LoginViewModel::class.java]
 
-
         viewModel.loginFormState.observe(viewLifecycleOwner) {
             binding.buttonLogin.isEnabled = false
 
@@ -121,8 +120,7 @@ class LoginFragment : Fragment() {
                         binding.root,
                         R.string.message_login_failed,
                         Snackbar.LENGTH_LONG
-                    )
-                        .show()
+                    ).show()
                 }
             }
             // ẩn progress bar đi

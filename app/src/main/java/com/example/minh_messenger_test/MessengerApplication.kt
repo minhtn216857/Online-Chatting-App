@@ -16,16 +16,12 @@ import javax.inject.Inject
 @HiltAndroidApp
 class MessengerApplication: Application() {
 
-    private lateinit var localDataSource: DataSource.LocalDataSource
-    private lateinit var remoteDataSource: DataSource.RemoteDataSource
     @Inject lateinit var repository: Repository
     lateinit var sharedReference: SharedPreferences
-
 
     override fun onCreate() {
         super.onCreate()
         setupSharedPref()
-//        setupViewModel()
     }
 
     private fun setupSharedPref() {
@@ -35,9 +31,4 @@ class MessengerApplication: Application() {
         )
     }
 
-//    private fun setupViewModel() {
-//        localDataSource = DefaultLocalDataSource(database)
-//        remoteDataSource = DefaultRemoteDataSource()
-//        repository = DefaultRepository(localDataSource, remoteDataSource)
-//    }
 }

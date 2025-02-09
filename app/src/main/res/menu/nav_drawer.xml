@@ -19,30 +19,8 @@
         android:title="Add Friend"
         tools:ignore="HardcodedText" />
     <item
-        android:id="@+id/item_waiting_message"
-        android:icon="@drawable/ic_message"
-        android:title="@string/title_waiting_message"
-        app:showAsAction="ifRoom|withText" />
-    <item
-        android:id="@+id/item_repository"
-        android:icon="@drawable/ic_repository"
-        android:title="@string/title_repository"
-        app:showAsAction="ifRoom|withText" />
-    <item
         android:id="@+id/item_login"
         android:icon="@drawable/ic_login"
         android:title="@string/title_login"
         app:showAsAction="ifRoom|withText" />
-    <group android:id="@+id/group1">
-        <item
-            android:id="@+id/item_settings"
-            android:icon="@drawable/ic_settings"
-            android:title="@string/title_setting"
-            app:showAsAction="ifRoom|withText" />
-        <item
-            android:id="@+id/item_about"
-            android:icon="@drawable/ic_about"
-            android:title="@string/title_about"
-            app:showAsAction="ifRoom|withText" />
-    </group>
 </menu>

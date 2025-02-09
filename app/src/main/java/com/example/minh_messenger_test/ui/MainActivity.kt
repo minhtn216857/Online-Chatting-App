@@ -6,38 +6,28 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
-import android.view.Gravity
-import android.view.LayoutInflater
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
-import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
-import com.example.minh_messenger_test.FCM.AccessToken
 import com.example.minh_messenger_test.MessengerApplication
 import com.example.minh_messenger_test.R
 import com.example.minh_messenger_test.data.model.Account
 import com.example.minh_messenger_test.data.model.AccountStatus
 import com.example.minh_messenger_test.databinding.ActivityMainBinding
 import com.example.minh_messenger_test.service.MainService
+import com.example.minh_messenger_test.service.MainServiceActions
 import com.example.minh_messenger_test.service.MainServiceRepository
-import com.example.minh_messenger_test.ui.login.LoginState
 import com.example.minh_messenger_test.ui.login.LoginViewModel
 import com.example.minh_messenger_test.ui.login.LoginViewModelFactory
 import com.example.minh_messenger_test.ui.voicecall.VoiceCallActivity
-import com.example.minh_messenger_test.ui.voicecall.repository.MainRepository
 import com.example.minh_messenger_test.utils.DataModel
 import com.example.minh_messenger_test.utils.DataModelType
 import com.example.minh_messenger_test.utils.MessengerUtils
@@ -45,14 +35,9 @@ import com.example.minh_messenger_test.utils.getCameraAndMicPermission
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.Firebase
 import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.database
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -75,7 +60,6 @@ class MainActivity : AppCompatActivity(), MainService.Listener {
     }
 
     private fun postNotification() {
-//        TODO("Not yet implemented")
     }
 
     private fun showMessage(messageDenied: Int, duration: Int, showAction: Boolean = false) {
@@ -121,7 +105,7 @@ class MainActivity : AppCompatActivity(), MainService.Listener {
         appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.home_fragment, // ID của Home Fragment
-                R.id.voiceCallFragment, // ID của Voice Call Fragment
+                R.id.call_fragment, // ID của Voice Call Fragment
                 R.id.phoneBookFragment // ID của Phone Book Fragment
             ),
             drawerLayout = binding.drawerLayout // Thiết lập DrawerLayout nếu sử dụng Navigation Drawer
@@ -142,7 +126,7 @@ class MainActivity : AppCompatActivity(), MainService.Listener {
                 // Đặt icon navigation cho các fragment đăng nhập, đăng ký, và chat
                 binding.includeMain.toolbarMain.setNavigationIcon(R.drawable.ic_up)
             }else if(destination.id == R.id.home_fragment
-                || destination.id == R.id.voiceCallFragment
+                || destination.id == R.id.call_fragment
                 || destination.id == R.id.phoneBookFragment){
                 binding.includeMain.toolbarMain.setNavigationIcon(R.drawable.ic_drawer)
             }
@@ -161,19 +145,15 @@ class MainActivity : AppCompatActivity(), MainService.Listener {
                 this,
                 Manifest.permission.POST_NOTIFICATIONS
             )
-            // Kiểm tra nếu ứng dụng nên hiển thị lời nhắc yêu cầu quyền hay không
             val shouldShowPrompt =
                 shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)
 
-            // Nếu quyền đã được cấp, gọi phương thức postNotification
             if (selPms == PackageManager.PERMISSION_GRANTED) {
                 postNotification()
             }
-            // Nếu nên hiển thị lời nhắc, hiển thị thông báo cho người dùng
             else if (shouldShowPrompt) {
                 showMessage(R.string.mesg_permission_prompt, Snackbar.LENGTH_LONG)
             }
-            // Nếu không, khởi chạy yêu cầu quyền thông qua requestPermissionLauncher
             else {
                 requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
             }
@@ -240,13 +220,23 @@ class MainActivity : AppCompatActivity(), MainService.Listener {
                 binding.drawerLayout.closeDrawer(GravityCompat.START)
                 true
             }
+
             if(it.itemId == R.id.item_add_friend){
-                navController.navigate(R.id.action_home_fragment_to_addFriendFragment)
+                if(navController.currentDestination?.id == R.id.call_fragment){
+                    navController.navigate(R.id.action_call_fragment_to_addFriendFragment)
+                }else{
+                    navController.navigate(R.id.action_home_fragment_to_addFriendFragment)
+                }
                 binding.drawerLayout.closeDrawer(GravityCompat.START)
                 true
             }
             if(it.itemId == R.id.item_profile){
-                navController.navigate(R.id.action_home_fragment_to_profileFragment)
+                if(navController.currentDestination?.id == R.id.call_fragment){
+                    navController.navigate(R.id.action_call_fragment_to_profileFragment)
+                }else{
+                    navController.navigate(R.id.action_home_fragment_to_profileFragment)
+
+                }
                 binding.drawerLayout.closeDrawer(GravityCompat.START)
                 true
             }
@@ -263,6 +253,14 @@ class MainActivity : AppCompatActivity(), MainService.Listener {
         updateStatusLogoutRealtimeDatabase(username)
         loginViewModel.saveLoginState(sharedPreferences, false)
         loginViewModel.updateLoginState(null)
+
+        // Dừng service khi đăng xuất
+        val stopServiceIntent = Intent(this, MainService::class.java).apply {
+            action = MainServiceActions.STOP_SERVICE.name
+        }
+        stopService(stopServiceIntent)
+
+
     }
 
     private fun updateStatusLogoutRealtimeDatabase(username: String){

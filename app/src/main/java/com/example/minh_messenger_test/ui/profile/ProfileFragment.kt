@@ -60,7 +60,7 @@ class ProfileFragment : Fragment() {
     @SuppressLint("SetTextI18n")
     private fun setupViews() {
         loginViewModel.loggedInAccount.observe(viewLifecycleOwner){ currentAccount ->
-            binding.textDisplayname.text = "Tên của bạn: ${currentAccount!!.displayName.toString()}"
+            binding.textDisplayname.text = "Your Display Name: ${currentAccount!!.displayName.toString()}"
             binding.textEmail.text = "Email: ${currentAccount.email.toString()}"
 
         }

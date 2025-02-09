@@ -51,11 +51,8 @@ class FirebaseClient @Inject constructor(
 
     fun sendMessageToOtherClient(username: String,message: DataModel, success: (Boolean) -> Unit) {
         val convertedMessage = gson.toJson(message.copy(sender = username))
-        Log.d("FirebaseClient", "📤 Sending message to: ${message.target}, Data: $convertedMessage") // Debug log
-
         databaseRef.child(message.target).child(LATEST_EVENT).setValue(convertedMessage)
             .addOnCompleteListener {
-                Log.d("FirebaseClient", "✅ Message sent successfully")
                 success(true)
             }
             .addOnFailureListener { e ->

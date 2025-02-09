@@ -3,11 +3,44 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_call"
-    app:startDestination="@id/voiceCallFragment">
+    app:startDestination="@id/call_fragment">
 
     <fragment
-        android:id="@+id/voiceCallFragment"
+        android:id="@+id/call_fragment"
         android:name="com.example.minh_messenger_test.ui.voicecall.VoiceCallFragment"
         android:label="@string/title_call"
-        tools:layout="@layout/fragment_voice_call" />
+        tools:layout="@layout/fragment_voice_call" >
+        <action
+            android:id="@+id/action_call_fragment_to_addFriendFragment"
+            app:destination="@id/addFriendFragment" />
+        <action
+            android:id="@+id/action_call_fragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
+        <action
+            android:id="@+id/action_call_fragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addFriendFragment"
+        android:name="com.example.minh_messenger_test.ui.updateFriend.AddFriendFragment"
+        android:label="Make Friend"
+        tools:layout="@layout/fragment_add_friend" />
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.minh_messenger_test.ui.profile.ProfileFragment"
+        android:label="Profile" />
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.example.minh_messenger_test.ui.login.LoginFragment"
+        android:label="@string/title_login"
+        tools:layout="@layout/fragment_login">
+        <action
+            android:id="@+id/action_loginFragment_to_registerFragment"
+            app:destination="@id/registerFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/registerFragment"
+        android:name="com.example.minh_messenger_test.ui.register.RegisterFragment"
+        android:label="@string/title_register"
+        tools:layout="@layout/fragment_register" />
 </navigation>

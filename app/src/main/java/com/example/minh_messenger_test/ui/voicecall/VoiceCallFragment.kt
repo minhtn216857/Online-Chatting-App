@@ -11,10 +11,13 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.example.minh_messenger_test.MessengerApplication
 import com.example.minh_messenger_test.R
 import com.example.minh_messenger_test.databinding.FragmentVoiceCallBinding
+import com.example.minh_messenger_test.ui.login.LoginFragment
 import com.example.minh_messenger_test.ui.login.LoginViewModel
 import com.example.minh_messenger_test.ui.login.LoginViewModelFactory
 import com.example.minh_messenger_test.ui.voicecall.repository.MainRepository
@@ -29,8 +32,10 @@ class VoiceCallFragment : Fragment() {
     private lateinit var binding: FragmentVoiceCallBinding
     private lateinit var videoCallViewModel: VideoCallViewModel
     private lateinit var videoCallAdapter: VideoCallAdapter
-    @Inject lateinit var mainRepository: MainRepository
-
+    @Inject
+    lateinit var mainRepository: MainRepository
+    private lateinit var loginViewModel: LoginViewModel
+    private lateinit var navController: NavController
     private var username: String? = null
 
     override fun onCreateView(
@@ -44,12 +49,28 @@ class VoiceCallFragment : Fragment() {
         return binding.root
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        navController = findNavController()
+        val currentBackStackEntry = navController.currentBackStackEntry!!
+        val savedStateHandle = currentBackStackEntry.savedStateHandle
+        savedStateHandle.getLiveData<Boolean>(LoginFragment.EXTRA_LOGIN_SUCCESS)
+            .observe(currentBackStackEntry) {
+                if (!it) {
+                    navigateToLoginFragment()
+                }
+            }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         // Lấy instance của ViewModel
         val repository = (requireActivity().application as MessengerApplication).repository
-        val loginViewModel = ViewModelProvider(requireActivity(), LoginViewModelFactory(repository))[LoginViewModel::class.java]
+        val loginViewModel = ViewModelProvider(
+            requireActivity(),
+            LoginViewModelFactory(repository)
+        )[LoginViewModel::class.java]
 
         // Lắng nghe cập nhật từ LoginViewModel
         loginViewModel.loggedInAccount.observe(viewLifecycleOwner) { account ->
@@ -59,7 +80,7 @@ class VoiceCallFragment : Fragment() {
                 setupRecycler()
                 setupViewModel()
             } else {
-                Log.e("VoiceCallFragment", "❌ Username is null! Không thể tiếp tục")
+                Log.e("VoiceCallFragment", "Username is null! Không thể tiếp tục")
 
             }
         }
@@ -68,22 +89,25 @@ class VoiceCallFragment : Fragment() {
     }
 
     private fun setupRecycler() {
-        val listener = object: VideoCallAdapter.OnItemClickListener{
+        val listener = object : VideoCallAdapter.OnItemClickListener {
             override fun onVideoCallClicked(target: String) {
                 Log.d("TARGET", "$target")
                 (activity as AppCompatActivity).getCameraAndMicPermission {
                     mainRepository.sendConnectionRequest(
                         sender = username!!,
                         target,
-                        true){
-                        if(it){
+                        true
+                    ) {
+                        if (it) {
                             //we have to start video call
                             //we wanna create an intent to move to call activity
-                            startActivity(Intent(requireActivity(),
-                                VoiceCallActivity::class.java).apply {
-                                    putExtra("target", target)
-                                    putExtra("isVideoCall", true)
-                                    putExtra("isCaller", true)
+                            startActivity(Intent(
+                                requireActivity(),
+                                VoiceCallActivity::class.java
+                            ).apply {
+                                putExtra("target", target)
+                                putExtra("isVideoCall", true)
+                                putExtra("isCaller", true)
                             })
 
                         }
@@ -96,12 +120,15 @@ class VoiceCallFragment : Fragment() {
                     mainRepository.sendConnectionRequest(
                         sender = username!!,
                         target,
-                        false){
-                        if(it){
+                        false
+                    ) {
+                        if (it) {
                             //we have to start video call
                             //we wanna create an intent to move to call activity
-                            startActivity(Intent(requireContext(),
-                                VoiceCallActivity::class.java).apply {
+                            startActivity(Intent(
+                                requireContext(),
+                                VoiceCallActivity::class.java
+                            ).apply {
                                 putExtra("target", target)
                                 putExtra("isVideoCall", false)
                                 putExtra("isCaller", true)
@@ -121,16 +148,35 @@ class VoiceCallFragment : Fragment() {
     private fun setupViewModel() {
         val repository = (requireActivity().application as MessengerApplication).repository
         val databaseRef = Firebase.database.reference
+
         videoCallViewModel = ViewModelProvider(
             requireActivity(),
-            VideoCallViewModelFactory(repository, databaseRef))[VideoCallViewModel::class.java]
+            VideoCallViewModelFactory(repository, databaseRef)
+        )[VideoCallViewModel::class.java]
 
+        loginViewModel = ViewModelProvider(
+            requireActivity(),
+            LoginViewModelFactory(repository)
+        )[LoginViewModel::class.java]
 
-        videoCallViewModel.loadFriendWithStatus(username!!)
-        videoCallViewModel.friendsAccWithStatus.observe(viewLifecycleOwner){
-            Log.d("MainActivity", "subscribeObservers: $it")
-            videoCallAdapter.updateStatus(it)
+        loginViewModel.loginState.observe(viewLifecycleOwner) {
+            if (!it.status || it.username == null) {
+                navigateToLoginFragment()
+            } else {
+                videoCallViewModel.loadFriendWithStatus(username!!)
+                videoCallViewModel.friendsAccWithStatus.observe(viewLifecycleOwner) {
+                    Log.d("MainActivity", "subscribeObservers: $it")
+                    videoCallAdapter.updateStatus(it)
+                }
+
+            }
         }
     }
 
+    private fun navigateToLoginFragment() {
+        val action = VoiceCallFragmentDirections.actionCallFragmentToLoginFragment()
+        navController.navigate(action)
+    }
 }
+
+

@@ -75,14 +75,14 @@
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:background="@android:color/transparent"
-            android:src="@drawable/ic_mic_off" />
+            android:src="@drawable/ic_mic_on" />
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/toggleCameraButton"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:background="@android:color/transparent"
-            android:src="@drawable/ic_camera_off" />
+            android:src="@drawable/ic_camera_on" />
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/switchCameraButton"
@@ -91,20 +91,6 @@
             android:background="@android:color/transparent"
             android:src="@drawable/ic_switch_camera" />
 
-        <androidx.appcompat.widget.AppCompatImageButton
-            android:id="@+id/toggleAudioDevice"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:background="@android:color/transparent"
-            android:src="@drawable/ic_ear"
-            tools:ignore="SpeakableTextPresentCheck" />
-
-        <androidx.appcompat.widget.AppCompatImageButton
-            android:id="@+id/screenShareButton"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:background="@android:color/transparent"
-            android:src="@drawable/ic_screen_share" />
 
     </LinearLayout>
 

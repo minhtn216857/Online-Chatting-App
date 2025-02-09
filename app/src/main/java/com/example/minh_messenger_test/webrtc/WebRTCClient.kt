@@ -127,7 +127,6 @@ class WebRTCClient @Inject constructor(
                 peerConnection?.setLocalDescription(object : MySdpObserver() {
                     override fun onSetSuccess() {
                         super.onSetSuccess()
-                        Log.d("WebRTC1", "📡 Đã đặt Local Description")
                         listener?.onTransferEventToSocket(
                             DataModel(type = DataModelType.Offer,
                                 sender = username,

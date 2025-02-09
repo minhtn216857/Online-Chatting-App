@@ -26,27 +26,17 @@ class VideoCallViewModel @Inject constructor(
 
     fun loadFriendWithStatus(username: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            Log.d("VideoCallViewModel", "loadFriendWithStatus() called with username: $username")
-
             val friends = (repository as Repository.RemoteRepository).loadFriendAccounts(username)
-            Log.d("VideoCallViewModel", "Friends loaded from repository: $friends")
-
             databaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    Log.d("VideoCallViewModel", "Firebase snapshot received: ${snapshot.childrenCount}")
-
                     val friendStatusList = friends?.map { friend ->
                         val status = snapshot.child(friend.username).child("status").value.toString()
-                        Log.d("VideoCallViewModel", "Friend: ${friend.username}, Status: $status")
                         friend to status
                     }
-
                     _friendAccWithStatus.postValue(friendStatusList!!)
-                    Log.d("VideoCallViewModel", "LiveData updated with: $friendStatusList")
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    Log.e("VideoCallViewModel", "Firebase error: ${error.message}")
                 }
             })
         }

@@ -81,18 +81,6 @@ class DefaultRemoteDataSource @Inject constructor(): DataSource.RemoteDataSource
     }
 
 
-//    // Hàm updateAccount để cập nhật thông tin tài khoản, trả về boolean
-//    override suspend fun updateAccount(account: Account): Boolean {
-//        // URL cơ sở cho dịch vụ cập nhật tài khoản
-//        val baseUrl = "https://updateaccount-pxgdcdndsa-uc.a.run.app"
-//        // Tạo retrofit service từ URL cơ sở
-//        val retrofit = createRetrofitService(baseUrl).create(MessageService::class.java)
-//        // Gọi phương thức updateAccount từ MessageService
-//        val result = retrofit.updateAccount(account)
-//        // Trả về kết quả yêu cầu (thành công hay không)
-//        return result.isSuccessful
-//    }
-
     override suspend fun updateAccount(account: Account): Boolean {
         val baseUrl = "https://updateaccount-pxgdcdndsa-uc.a.run.app"
         val retrofit = createRetrofitService(baseUrl).create(MessageService::class.java)

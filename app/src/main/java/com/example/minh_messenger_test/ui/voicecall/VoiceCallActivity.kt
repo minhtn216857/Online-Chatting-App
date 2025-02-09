@@ -83,7 +83,6 @@ class VoiceCallActivity : AppCompatActivity(), MainService.EndCallListener {
             if(!isVideoCall){
                 toggleCameraButton.isVisible = false
                 switchCameraButton.isVisible = false
-                screenShareButton.isVisible = false
             }
             MainService.localSurfaceView = localView
             MainService.remoteSurfaceView = remoteView
@@ -108,10 +107,10 @@ class VoiceCallActivity : AppCompatActivity(), MainService.EndCallListener {
             toggleCameraButton.setOnClickListener {
                 if(!isCameraMuted){
                     serviceRepository.toggleCamera(true)
-                    toggleCameraButton.setImageResource(R.drawable.ic_camera_on)
+                    toggleCameraButton.setImageResource(R.drawable.ic_camera_off)
                 }else{
                     serviceRepository.toggleCamera(false)
-                    toggleCameraButton.setImageResource(R.drawable.ic_camera_off)
+                    toggleCameraButton.setImageResource(R.drawable.ic_camera_on)
                 }
                 isCameraMuted = !isCameraMuted
             }
@@ -123,10 +122,10 @@ class VoiceCallActivity : AppCompatActivity(), MainService.EndCallListener {
             toggleMicrophoneButton.setOnClickListener {
                 if(!isMicrophoneMuted){
                     serviceRepository.toggleMicrophone(true)
-                    toggleMicrophoneButton.setImageResource(R.drawable.ic_mic_on)
+                    toggleMicrophoneButton.setImageResource(R.drawable.ic_mic_off)
                 }else{
                     serviceRepository.toggleMicrophone(false)
-                    toggleMicrophoneButton.setImageResource(R.drawable.ic_mic_off)
+                    toggleMicrophoneButton.setImageResource(R.drawable.ic_mic_on)
                 }
                 isMicrophoneMuted = !isMicrophoneMuted
             }
@@ -137,6 +136,7 @@ class VoiceCallActivity : AppCompatActivity(), MainService.EndCallListener {
     override fun onCallEnded() {
         finish()
     }
+
 
     override fun onDestroy() {
         super.onDestroy()
